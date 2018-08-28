@@ -1,0 +1,1 @@
+"object"==typeof adcm&&adcm.callextpixel("//data.artlebedev.ru/1/4010/i/i");

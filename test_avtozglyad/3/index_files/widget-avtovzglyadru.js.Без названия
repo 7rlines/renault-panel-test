@@ -1,0 +1,1269 @@
+(function (version, config) {
+    if (typeof window.giraff != 'undefined') {
+        return;
+    }
+
+    function GRF(version, config) {
+        // Подписываемся на сообщения
+        var that = this;
+        if (window.addEventListener){
+            window.addEventListener("message", function(event) {that.message_handler(event);}, false);
+        } else {
+            window.attachEvent("onmessage", function(event) {that.message_handler(event);});
+        }
+
+        this.name = config.name;
+        this.widgets = config.widgets;
+        this.url_settings = config.url_settings;
+
+        var iframe_settings = false;
+        try {
+           iframe_settings = window.name ? JSON.parse(window.name) : false;
+        } catch (e) {}
+
+        this.is_amp = (typeof iframe_settings == "object" && iframe_settings.attributes && iframe_settings.attributes.hasOwnProperty('ampSlotIndex'));
+
+        this.parent = this.is_amp ? window : window.top;
+        this.is_parent = (this.parent == window);
+        this.run_mode = 'default';
+        if (typeof config.run_mode == 'string' && config.run_mode == 'callback') {
+            this.run_mode = 'callback';
+        }
+        if (typeof config.single_mode != 'undefined') {
+            this.single_mode = config.single_mode;
+        }
+        this.callback_name = null;
+        this.callback_options = null;
+
+        this.amp_context = this.is_amp ? iframe_settings.attributes._context : null;
+
+        if (this.is_parent) {
+            // Если окно главное - инициализируемся
+
+            this.cookies = new GRF_Cookies();
+
+            this.inactive = false; //Math.random() < 0.03;
+            this.mode = this.get_mode(0);
+
+            var url = this.get_canonical_url();
+            var is_canonical = url ? true : false;
+            if (!url) {
+                url = window.location.href;
+            }
+            this.set_url(url, is_canonical);
+
+            var is_vac = window.location.href.indexOf('utm_source=grf-eng') > -1;
+            if (is_vac) {
+                this.cookies.set('_grf_vac', 1, {path:'/'});
+            } else if (this.cookies.get('_grf_vac')) {
+                is_vac = true;
+            }
+
+            var vis = false;
+            this.ref = "";
+            var doc_referrer = this.is_amp ? this.amp_context.referrer : document.referrer;
+            var ref_domain = doc_referrer.split('/')[2];
+            var cur_domain = window.location.href.split('/')[2];
+            var coo_domain = this.cookies.get('_grf_ref');
+            var is_vis = this.cookies.get('_grf_vis');
+
+            if (!ref_domain) {
+                ref_domain = cur_domain;
+            }
+            if (ref_domain == cur_domain && !is_vis) {
+                vis = true;
+                this.cookies.set('_grf_vis', 1, {path:'/'});
+            }
+
+            if (ref_domain != cur_domain) {
+                vis = true;
+                this.ref = ref_domain;
+                this.cookies.set('_grf_vis', 1, {path:'/'});
+                this.cookies.set('_grf_ref', ref_domain, {path:'/', expires:2592000});
+            } else if (coo_domain && (coo_domain != cur_domain)) {
+                this.ref = coo_domain;
+            }
+
+            // Запускаем статистику
+            this.stats = new GRF_Stats({
+                name: this.name,
+                url: this.url,
+                url_settings: this.url_settings,
+                is_vac: is_vac,
+                vis: vis,
+                referrer: this.ref,
+                referrer_full: doc_referrer,
+                version: version
+            }, this);
+            this.stats.run();
+        }
+
+        if ('default' == this.run_mode) {
+            this.parent.postMessage("giraff:get_config", "*");
+        }
+    };
+    GRF.prototype = {
+        widget_queue: [],
+        draw_queue: [],
+        pv_tags: [],
+        has_active_drawing: false,
+        is_drawing: false,
+        single_mode: true,
+        window_count: 0,
+        window_idx: 0,
+        widget_drawn: 0,
+        change_article: function(url, elem, is_canonical) {
+            is_canonical = is_canonical ? true : false;
+            if (url) {
+                this.set_url(url, is_canonical);
+            }
+            if (elem) {
+                this.set_container(elem);
+            }
+        },
+        message_handler: function(event) {
+            if ("string" != typeof event.data) {
+                return;
+            }
+            var data = event.data.split(':');
+            if (data[0] != "giraff") {
+                return;
+            }
+            if (data[1] == "get_config") {
+                this.window_count++;
+                var mode = this.inactive ? 'inactive' : (this.single_mode ? this.mode : 'multi');
+                event.source.postMessage("giraff:set_config:" + this.window_count + ":" + mode + ":" + encodeURIComponent(this.url) + ":" + encodeURIComponent(this.ref), "*");
+                return;
+            }
+            if (data[1] == "set_config") {
+                this.window_idx = data[2];
+                if (data[3] == "inactive") {
+                    this.mode = false;
+                    this.inactive = true;
+                } else if (data[3] == "multi") {
+                    this.mode = false;
+                    this.inactive = false;
+                } else {
+                    this.mode = data[3];
+                    this.inactive = false;
+                }
+                this.set_url(decodeURIComponent(data[4]), true);
+                this.ref = decodeURIComponent(data[5]);
+                this.run();
+                return;
+            }
+            if (data[1] == "draw_request") {
+                this.draw_queue.push(event.source);
+                this.allow_drawing();
+                return;
+            }
+            if (data[1] == "draw_done") {
+                this.has_active_drawing = false;
+                this.allow_drawing();
+                if (window.giraff && window.giraff.callbacks && window.giraff.callbacks.widget) {
+                    window.giraff.callbacks.widget();
+                }
+                return;
+            }
+            if (data[1] == "draw_allowed") {
+                this._draw();
+                return;
+            }
+            if (data[1] == "pv_tags") {
+                if (data[2]) {
+                    var pv_tags = data[2].split(',');
+                    this.stats.send_pv_tags(pv_tags);
+                }
+                return;
+            }
+        },
+        get_canonical_url: function() {
+            var ms = document.getElementsByTagName('meta');
+            for (i = 0; i < ms.length; i++) {
+                var p, u;
+                if (
+                    (p = ms[i].getAttribute('property'))
+                    && p == 'og:url'
+                    && (u = ms[i].getAttribute('content'))
+                    && u.substr(0,4) == 'http'
+                ) {
+                    return u;
+                }
+            }
+            return false;
+        },
+        set_url: function(url, is_canonical) {
+            if (!is_canonical) {
+                var hash = '';
+                if (url.indexOf('#')) {
+                    var t = url.split('#');
+                    url = t.shift();
+                    if (this.url_settings.store_hash) {
+                        hash = t.join('#');
+                    }
+                }
+                var params = '';
+                if (url.indexOf('?')) {
+                    var t = url.split('?');
+                    url = t.shift();
+                    params = t.join('?');
+                }
+                var good_params = [];
+                if (params.length) {
+                    var p = params.split('&');
+                    for (var i = 0; i < p.length; i++) {
+                        var pname = p[i].split('=')[0];
+                        if (this.url_settings.safe_params.indexOf(pname) > -1) {
+                            good_params.push(p[i]);
+                        }
+                    }
+                }
+                this.url = url + (good_params.length ? '?' + good_params.join('&') : '') + (hash ? '#' + hash : '')
+
+            } else {
+                this.url = url
+            }
+            if (this.stats) {
+                this.stats.set_url(this.url);
+            }
+        },
+        set_container: function(elem){
+            this.stats.set_container(elem);
+        },
+        get_mode: function(idx) {
+            if (idx >= this.widgets.length) {
+                return false;
+            }
+            if (this.mode) {
+                return this.mode;
+            }
+            var w = this.widgets[idx];
+            var t = [
+                {mode: 'ae', fill: w['ae']['fill']},
+                {mode: 'na', fill: w['na']['fill']},
+                {mode: 'rv', fill: w['rv']['fill']},
+            ];
+            var mode, sum = 0, r = Math.random() * 100;
+            for (var i in t) {
+                sum += t[i]['fill'];
+                if (r <= sum) {
+                    mode = t[i]['mode'];
+                    break;
+                }
+            }
+            return mode;
+        },
+        run: function() {
+            // Запускаем Mutation observer, он будет класть элементы в очередь и запускать обработку очереди
+            var that = this;
+            this.observer = new MutationObserver(function(mutations) {
+                var new_widgets = 0;
+                mutations.forEach(function(mutation) {
+                    if (mutation.type != 'childList' || !mutation.addedNodes.length) {
+                        return;
+                    }
+                    Array.prototype.forEach.call(mutation.addedNodes, function(child) {
+                        if (child.nodeName == 'DIV' && (child.id && 0 == child.id.indexOf('grf_' + that.name))) {
+                            that.widget_queue.push(child);
+                            new_widgets++;
+                        } else if (child.childNodes.length) {
+                            Array.prototype.forEach.call(child.querySelectorAll('div[id^="grf_' + that.name + '"]'), function(schild) {
+                                that.widget_queue.push(schild);
+                                new_widgets++;
+                            });
+                        }
+                    });
+                });
+                if (new_widgets > 0) {
+                    that.draw();
+                }
+            });
+
+            this.observer.observe(document, {childList: true, subtree: true});
+
+            // Получаем список всех наших DIV и так же кладём в очередь
+            var widgets = document.querySelectorAll('div[id^="grf_' + this.name + '"]');
+            if (widgets.length) {
+                Array.prototype.forEach.call(widgets, function(child){
+                    that.widget_queue.push(child);
+                });
+                this.draw();
+            }
+        },
+        allow_drawing: function() {
+            if (this.inactive || !this.draw_queue.length || this.has_active_drawing) {
+                return;
+            }
+
+            this.has_active_drawing = true;
+            var next_drawer = this.draw_queue.shift();
+            next_drawer.postMessage("giraff:draw_allowed", "*");
+        },
+        draw: function() {
+            if (!this.widget_queue.length || this.is_drawing) {
+                return;
+            }
+            this.is_drawing = true;
+
+            this.parent.postMessage("giraff:draw_request", "*");
+        },
+        _draw: function() {
+            if (!this.widget_queue.length) {
+                this.onDrawDone();
+                return;
+            }
+            var w_el = this.widget_queue.shift();
+            if (w_el.id.indexOf("grf_" + this.name) != 0) {
+                this._draw();
+                return;
+            }
+            var wid = w_el.id.replace("grf_" + this.name ,"").split('_');
+
+            var widget_idx;
+            if (wid.length == 1) {
+                widget_idx = 1;
+                w_el.id += "_1";
+            } else if (wid.length == 2) {
+                widget_idx = wid[1];
+            } else {
+                this._draw();
+                return;
+            }
+            widget_idx--;
+            if ("object" != typeof this.widgets[widget_idx]) {
+                this._draw();
+                return;
+            }
+
+            this.widget_drawn++;
+            w_el.id += "_" + this.window_idx + "_" + this.widget_drawn;
+
+            var that = this;
+            var wmode = this.get_mode(widget_idx);
+            if ("cells" in this.widgets[widget_idx]) {
+                this.load_widget_data(w_el.id, widget_idx);
+            } else {
+                this.draw_widget(
+                    w_el.id,
+                    this.widgets[widget_idx][wmode]['id'],
+                    wmode,
+                    function(){that._draw();}
+                );
+            }
+            this.widgets[widget_idx]["on_show_tags"] = [];
+            if (this.widgets[widget_idx]['combo_mode']) {
+                var cm = this.widgets[widget_idx]['combo_mode'];
+                for (var j in cm) {
+                    this.pv_tags.push(cm[j]);
+                    this.widgets[widget_idx]["on_show_tags"].push(cm[j]);
+                }
+            } else if (this.widgets[widget_idx]['cells']) {
+                for (var i=0; i<this.widgets[widget_idx]["cells"].length; i++) {
+                    var type = this.widgets[widget_idx]["cells"][i];
+                    this.pv_tags.push('pv_' + type);
+                    this.widgets[widget_idx]["on_show_tags"].push('pv_' + type);
+                }
+            } else {
+                this.pv_tags.push('pv_' + wmode);
+                this.widgets[widget_idx]["on_show_tags"].push('pv_' + wmode);
+            }
+        },
+        load_widget_data: function(div_id, widget_idx) {
+            /*
+            1) Грузим нужно количество тизеров каждого типа
+            2) Подставляем их в шаблон
+            3) Заполняем DIV
+            */
+            var w = this.widgets[widget_idx];
+
+            var nba = {};
+            for (var i=0; i<w["cells"].length; i++) {
+                var wid = w[w["cells"][i]]["id"];
+                wid in nba ? nba[wid]++ : nba[wid] = 1;
+            }
+
+            var to_load = [];
+            for (var adp_id in nba) {
+                to_load.push({"id": adp_id, "num": nba[adp_id]});
+            }
+
+            this.load_teasers(div_id, to_load, 0, [], widget_idx);
+        },
+        load_teasers: function(div_id, to_load, idx, result, widget_idx) {
+            if (idx >= to_load.length) {
+                return this.draw_widget_cells(div_id, result, widget_idx);
+            }
+            var domain = 'a.giraff.io';
+            var adp_id = to_load[idx]["id"];
+            var num = to_load[idx]["num"];
+            var src = '//' + domain + '/data/' + adp_id + '.js?json=1&async=1&cs=utf-8&rand=' + Math.random();
+            if (num > 0) {
+                src += '&num=' + num;
+            }
+            var that = this;
+            GRF_JSONP(src, {onSuccess: function(data) {
+                result[adp_id] = data;
+                that.load_teasers(div_id, to_load, ++idx, result, widget_idx)
+            }});
+        },
+        draw_widget_cells: function(div_id, result, widget_idx) {
+            var w = this.widgets[widget_idx];
+            var template = this.widgets[widget_idx]['tpl'];
+            var tags = {
+                "adp_id": w["ae"]["id"],
+                "cols": w["cols"],
+                "rows": Math.ceil(w["cells"].length / w["cols"])
+            };
+
+            var out = '';
+            out += this._replace_tags(template['css'], tags);
+            out += this._replace_tags(template['header'], tags);
+            out += this._replace_tags(template['row_header'], tags);
+            out += this._build_items(widget_idx, result, template['item'], tags);
+            out += this._replace_tags(template['row_footer'], tags);
+            out += this._replace_tags(template['footer'], tags);
+            document.getElementById(div_id).innerHTML = out;
+
+            if (template['preload_js']) {
+                try {
+                    var __da_widget_id = this.widgets[widget_idx]["ae"]["id"];
+                    var __da_widget_div = div_id;
+                    var __da_widget_src = null;
+                    var __da_widget_charset = "utf-8";
+                    eval(template['preload_js']);
+                } catch (e) {
+                    console.log(e)
+                }
+            }
+
+            this._draw();
+        },
+        _build_items: function(widget_idx, result, template, tags) {
+            var out = '';
+
+            var w = this.widgets[widget_idx];
+            for (var i=0; i<w["cells"].length; i++) {
+                var type = w["cells"][i];
+                var adp_id = w[type]["id"];
+                if (result[adp_id] && result[adp_id].length) {
+                    var item = result[adp_id].shift();
+                    item["cell_type"] = type;
+                    out += this._replace_item_tags(template, item, tags);
+                }
+            }
+
+            return out;
+        },
+        _replace_tags: function(template, tags) {
+            var tpl = template;
+            if (!tpl) {
+                return "";
+            }
+            tpl = tpl.replace(/%ADP_ID%/g, "adp_id" in tags ? tags["adp_id"] : "");
+            tpl = tpl.replace(/%COLS%/g, "cols" in tags ? tags["cols"] : "");
+            tpl = tpl.replace(/%ROWS%/g, "rows" in tags ? tags["rows"] : "");
+            return tpl;
+        },
+        _replace_item_tags: function(template, item, tags) {
+            var tpl = template;
+            if (!tpl) {
+                return "";
+            }
+            tpl = this._replace_tags(tpl, tags);
+            tpl = tpl.replace(/%TITLE%/g, "title" in item ? item["title"] : "");
+            tpl = tpl.replace(/%URL%/g, "url" in item ? item["url"] : "");
+            tpl = tpl.replace(/%ANNOUNCE%/g, "announce" in item ? item["announce"] : "");
+            tpl = tpl.replace(/%CELL_TYPE%/g, "cell_type" in item ? item["cell_type"] : "");
+            tpl = tpl.replace(/%TARGET%/g, ("cell_type" in item && "ae" == item["cell_type"]) ? "_top" : "_blank");
+            tpl = tpl.replace(/%IMG_(\d+)x(\d+)%/g, function(str, w, h){
+                return "img" in item ? item["img"].replace('100x100', w + 'x' + h) : "";
+            });
+            return tpl;
+        },
+        draw_widget: function(div_id, adp_id, mode, callback) {
+
+            var hit = 'click/' + mode + '/' + this.name;
+            var s = document.createElement('script');
+            s.type = 'text/javascript';
+            var r = this.ref ? '&ref=' + encodeURIComponent(this.ref) : '';
+            var clickwrap = encodeURIComponent("https://data.giraff.io/" + hit + "/?u=" + encodeURIComponent(this.url) + r + "&go=");
+            var domain = 'a.giraff.io';
+            if ('whotrades' == this.name || 'whotradesen' == this.name) {
+                domain = 'grf.whotrades.com';
+            }
+            if ('lifestylebuzz' == this.name) {
+                domain = 'a.lifestylebuzz.ru';
+            }
+            var src = '//' + domain + '/data/' + adp_id + '.js?div=' + div_id + '&async=1&cs=utf-8&rand=' + Math.random() + '&clickwrap=' + clickwrap;
+            if (this.run_mode == 'callback') {
+                src += '&json=1&callback=' + this.callback_name;
+                if (this.callback_options && this.callback_options.limit && this.callback_options.limit > 0) {
+                    src += '&num=' + this.callback_options.limit;
+                }
+            }
+            s.src = src;
+            s.async = true;
+            if ('undefined' != typeof s.onload) {
+                s.onerror = function(){callback();}
+                s.onload  = function(){setTimeout(callback, 1);}
+            }
+
+            var doc = document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0];
+            doc.appendChild(s);
+
+            if ('undefined' == typeof s.onload) {
+                var o = setInterval(function() {
+                    if (document.getElementById(div_id).innerHTML) {
+                        callback();
+                        clearInterval(o)
+                    }
+                }, 50);
+            }
+            return true;
+        },
+        onDrawDone: function() {
+            this.is_drawing = false;
+            this.parent.postMessage("giraff:draw_done", "*");
+            this.sendCustomTags(this.pv_tags);
+            var tags = this.stats.check_visible_widget();
+            if(tags.length){
+                this.sendCustomTags(tags);
+            }
+        },
+        sendCustomTags: function(tags) {
+            if (tags.length) {
+                this.parent.postMessage("giraff:pv_tags:" + tags.join(','), "*");
+            }
+        }
+    };
+
+    var GRF_Stats = function(config, parent) {
+        this.parent = parent;
+        this.reading_time = 0;
+        this.content_reading_time = 0;
+        this.page_visible = true;
+        this.max_scroll_percent = 0;
+        this.max_scroll_height = 0;
+        this.max_scroll_distance = false;
+        this.time_hash = new Date().getTime() +'.'+ new Date().getMilliseconds();
+        this.already_added = [];
+        this.already_visited = [window.location.href];
+        this.last_page_position = 0;
+        this.pv_tags_sent = {};
+
+        this.name = config.name;
+        this.inactive = false;
+        this.active = false;
+        this.url_settings = config.url_settings;
+        this.url = null;
+        this.elem = null;
+        this.set_url(config.url);
+        this.is_vac = config.is_vac;
+        this.vis = config.vis;
+        this.ref = config.referrer;
+        this.ref_full = config.referrer_full;
+        this.version = config.version;
+        this.social_stats = null;
+
+        this.clear_stats = function(){
+            if(this.already_visited.indexOf(window.location.href) == -1 && this.last_page_position - (window.pageYOffset || document.documentElement.scrollTop) < 0){
+                this.send_stat();
+                this.set_url(window.location.href);
+                this.already_visited.push(window.location.href);
+                this.last_page_position = document.body.scrollTop;
+                this.pv_tags_sent = {};
+                this.add_tracker();
+            }
+            this.content_depth = 0;
+            this.content_depth_percent = 0;
+            this.reading_time = 0;
+            this.content_reading_time = 0;
+            this.max_scroll_percent = 0;
+        };
+
+        this.soc_stat = new GRF_Soc(this);
+
+        if ('whotrades' == this.name || 'whotradesen' == this.name) {
+            els = document.getElementsByClassName('blog-post-item__content-wrapper');
+            if (els && els.length > 0) {
+                this.elem = els[0];
+            }
+        }
+
+        var that = this;
+        this.add_event(window, 'focus', function() {that.page_visible = true;});
+        this.add_event(window, 'blur', function() {that.page_visible = false;});
+        this.add_event(window, 'scroll', function() {that.calc_scroll(that.elem);});
+        this.add_event(window, 'load',  function() {that.calc_scroll(that.elem);});
+        this.add_event(window, 'beforeunload', function() {that.send_stat();});
+
+
+        // получаем массив нужных блоков
+        this.arr = []; // массив, где будим хранить все блоки имеющиеся в DOM
+        this.arrWidgets = []; // массив, где будим хранить все виджеты имеющиеся в DOM
+        this.content_depth = 0;
+        this.content_depth_percent = 0;
+        this.content_selector = '.js-giraff-article';
+        this.widget_selector = 'grf_' + this.name + "_";  // id^=this.widget_selector
+
+        this.add_event(window, 'load', function() {that.get_widgets();});
+        this.add_event(window, 'scroll', function() {that.check_watch_widget();});
+        this.add_event(window, 'resize', function() {that.check_watch_widget();});
+        this.add_event(window, 'load',  function() { that.get_blocks();});
+        this.add_event(window, 'scroll', function() {that.init_check_depth();});
+        this.add_event(window, 'load',  function() {
+            that.init_check_depth();
+            that.check_watch_widget();
+            that.observeDOM(document, function () {
+                that.get_blocks();
+                that.init_check_depth();
+                that.get_widgets();
+            });
+        });
+
+        if (document.addEventListener) {
+            document.addEventListener('DOMContentLoaded', function() {that.calc_scroll(that.elem);});
+            document.addEventListener('DOMContentLoaded', function() {that.check_watch_widget();});
+            document.addEventListener('DOMContentLoaded', function() {that.init_check_depth(that.arr);});
+            document.addEventListener('DOMContentLoaded', function() {that.init_clicks();});
+        } else {
+            this.add_event(window, 'load', function() {that.init_clicks();});
+        }
+
+    };
+    GRF_Stats.prototype = {
+        run: function() {
+
+            this.add_tracker();
+
+            var that = this;
+            setInterval(function() {that.init_clicks();}, 1000);
+            setInterval(function() {that.calc_reading_time(that.elem);}, 1000);
+            setInterval(function() {that.calc_content_reading_time();}, 1000);
+
+            setTimeout(function() {that.soc_stat.run(that.url);}, 200);
+        },
+        set_inactive: function(value) {
+            this.inactive = value;
+        },
+        set_active: function(value) {
+            this.active = value;
+        },
+        set_url: function (url) {
+            if (this.url == url) {
+                return;
+            }
+            this.url = url;
+
+            this.reading_time = 0;
+            this.page_visible = true;
+            this.max_scroll_percent = 0;
+            this.max_scroll_height = 0;
+            this.max_scroll_distance = false;
+            this.time_hash = new Date().getTime() +'.'+ new Date().getMilliseconds();
+        },
+        set_container: function(elem) {
+            this.elem = elem;
+            this.reading_time = 0;
+            this.page_visible = true;
+            this.max_scroll_percent = 0;
+            this.max_scroll_height = 0;
+            this.max_scroll_distance = false;
+        },
+        add_event: function(el, event, handler, check) {
+            if (check) {
+                if (this.already_added.indexOf(el) > -1) {
+                    return;
+                }
+                this.already_added.push(el);
+            }
+            if (el.addEventListener) {
+                el.addEventListener(event, handler);
+            } else {
+                el.attachEvent('on' + event, handler);
+            }
+        },
+        element_offset_top: function(el){
+            var box = el.getBoundingClientRect();
+
+            var scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
+            var clientTop = document.documentElement.clientTop || document.body.clientTop || 0;
+            var top  = box.top + scrollTop - clientTop;
+
+            return Math.round(top);
+        },
+        init_clicks: function() {
+            var that = this;
+            var links = document.getElementsByTagName('a');
+            for (var i = 0; i < links.length; i++) {
+                var link = links[i];
+                if (link.href && link.className && (link.className.indexOf('grf-list__link') > -1)) {
+                    this.add_event(link, 'click', function() {that.send_click();}, true);
+                }
+            }
+        },
+        calc_reading_time: function (elem) {
+            this.page_visible = (document.hidden !== undefined) ? !document.hidden : this.page_visible;
+            if (this.page_visible) {
+                if (elem && this.max_scroll_distance) {
+                    this.reading_time++;
+                } else if (!elem) {
+                    this.reading_time++;
+                }
+            }
+        },
+        calc_scroll: function (elem) {
+            var current_scroll = (window.pageYOffset || document.documentElement.scrollTop) + document.documentElement.clientHeight - this.last_page_position;
+
+            var current_max_scroll_height;
+
+            if (elem) {
+                current_max_scroll_height = Math.max(
+                    elem.clientHeight, elem.scrollHeight, elem.offsetHeight
+                );
+
+                var elem_offset_top = this.element_offset_top(elem);
+                this.max_scroll_distance = (current_scroll >= elem_offset_top) && (elem_offset_top + current_max_scroll_height >= current_scroll);
+
+                current_scroll = this.max_scroll_distance ? current_scroll - elem_offset_top : 0;
+
+            } else {
+                current_max_scroll_height = Math.max(
+                    document.body.scrollHeight, document.documentElement.scrollHeight,
+                    document.body.offsetHeight, document.documentElement.offsetHeight,
+                    document.body.clientHeight, document.documentElement.clientHeight
+                );
+            }
+
+            var flag_recalc = (current_max_scroll_height != this.max_scroll_height);
+            this.max_scroll_height = current_max_scroll_height;
+
+            current_scroll_percent = Math.round(100 * current_scroll / this.max_scroll_height);
+
+            this.scroll_depth = current_scroll;
+
+            if ((current_scroll_percent > this.max_scroll_percent) || flag_recalc) {
+                this.max_scroll_percent = current_scroll_percent;
+            }
+            if (this.max_scroll_percent > 100) {
+                this.max_scroll_percent = 100;
+            }
+        },
+        observeDOM: (function () {
+
+            var href = location.href;
+
+            var MutationObserver = window.MutationObserver || window.WebKitMutationObserver,
+              eventListenerSupported = window.addEventListener;
+
+            return function (obj, callback) {
+                if (MutationObserver) {
+                    var obs = new MutationObserver(function (mutations) {
+                        mutations.forEach(function() {
+                            callback();
+                        });
+                        if(href != location.href){
+                            href = location.href;
+                            window.giraff.stats.clear_stats();
+                        }
+                    });
+                    obs.observe(obj, {
+                        childList: true,
+                        attributes: false,
+                        subtree: true,
+                        characterData: false
+                    });
+                }
+                else if (eventListenerSupported) {
+                    obj.addEventListener('DOMNodeInserted', callback, false);
+                    obj.addEventListener('DOMNodeRemoved', callback, false);
+                }
+            }
+        })(),
+        get_coords: function (elem) {
+            var box = elem.getBoundingClientRect();
+
+            var body = document.body;
+            var docEl = document.documentElement;
+
+            var scrollTop = window.pageYOffset || docEl.scrollTop || body.scrollTop;
+
+            var clientTop = docEl.clientTop || body.clientTop || 0;
+
+            var top = box.top + scrollTop - clientTop;
+            var height = box.height;
+            var bottom = top + height;
+
+            return {
+                top: Math.round(top),
+                height: height,
+                bottom: Math.round(bottom),
+                watched: false,
+                el: elem
+            };
+        },
+        get_blocks: function () {
+            this.blocks = document.querySelectorAll(this.content_selector);
+            if (this.blocks && this.blocks.length) {
+                for(var i = 0; i < this.blocks.length; i++){
+                    // если внутри блока контент загружается динамически, то высота блока будет 0, поэтому дождемся пока observe добавит потомков и выполнится условие
+                    if (this.get_coords(this.blocks[i]).height != 0) {
+                        this.arr.push(this.get_coords(this.blocks[i]));
+                    }
+                };
+            }
+        },
+        mutex_get_widgets: false,
+        get_widgets: function() {
+            if (this.mutex_get_widgets) return;
+            this.mutex_get_widgets = true;
+            var w_elements = document.querySelectorAll('[id^="'+this.widget_selector+'"]');
+            for (var i = 0; i < w_elements.length; i++) {
+                var flag = true,
+                    el = w_elements[i],
+                    blockId = el.id.substring(this.widget_selector.length),    // убираем из id виджета "grf_" + имя площадки + "_"
+                    blockNumber = blockId.substring(blockId.indexOf("_"), -1);
+
+                for (var j = 0; j < this.arrWidgets.length; j++) {
+                    if (this.arrWidgets[j].el == el) {
+                        flag = false;
+                        break;
+                    }
+                }
+
+                if (flag) {
+                    var coords = this.get_coords(el);
+                    if(coords.height != 0 && blockId.indexOf("_") > 0){ // Если блок прогрузился, то у него blockId будет типа "1_1_1", а если нет, то типа "1"
+                        this.arrWidgets.push([{id: blockNumber}, coords].reduce(function (r, o) {
+                            Object.keys(o).forEach(function (k) {
+                                r[k] = o[k];
+                            });
+                            return r;
+                        }, {}));
+                    }
+                }
+            }
+            this.mutex_get_widgets = false;
+        },
+        check_visible_widget: function() {
+            this.page_visible = (document.hidden !== undefined) ? !document.hidden : this.page_visible;
+            var tags = [];
+
+            if (this.page_visible) {
+                var cpTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop,  // верх экрана
+                    cpBottom = cpTop + window.innerHeight;    // низ экрана
+
+
+                // проверяем, есть ли виджеты попавшие на экран
+                for(var index = 0; index < this.arrWidgets.length; index++){
+                    if(this.arrWidgets[index].watched == false){
+                        if((this.arrWidgets[index].top > cpTop & this.arrWidgets[index].top < cpBottom) || (this.arrWidgets[index].bottom < cpBottom && this.arrWidgets[index].bottom > cpTop) || (this.arrWidgets[index].bottom < cpBottom && this.arrWidgets[index].top > cpTop)){
+                            this.arrWidgets[index].watched = true;
+                            tags.push("ws_" + this.arrWidgets[index].id);
+                            if (this.parent.widgets[this.arrWidgets[index].id - 1]["on_show_tags"]) {
+                                for (var i in this.parent.widgets[this.arrWidgets[index].id - 1]["on_show_tags"]) {
+                                    tags.push(this.parent.widgets[this.arrWidgets[index].id - 1]["on_show_tags"][i].replace("pv_", "wv_") + "_" + this.arrWidgets[index].id);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return tags;
+        },
+        check_watch_widget: function() {
+            var tags = this.check_visible_widget();
+            if(tags && tags.length){
+                window.giraff.sendCustomTags(tags);
+            }
+        },
+        init_check_depth: function () {
+            if (this.arr && this.arr.length) {
+                var scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
+                // считаем глубину
+                // определяем ключевые точки (область видимости пользователя на сайте), верх экрана и низ
+                var cpTop = scrollTop,                          // верх экрана
+                  cpBottom = cpTop + window.innerHeight;      // низ экрана
+
+                var fullContentHeight = 0;  // суммарная глубина нашего контента
+
+                // описываем сортировку по объектам в массиве. Сортируем по позиции top относительно страницы
+                function objSort(a, b) {
+                    if (a.top > b.top) return 1;
+                    if (a.top < b.top) return -1;
+                }
+                this.arr.sort(objSort);
+
+                // если блоки "накладываются по глубине", то объединим их
+                for(var i = 0; i < this.arr.length; i++){
+                    for(var j = i+1; j < this.arr.length; j++){
+                        // если блоки рядом друг с другом и одинаковой высоты
+                        if(this.arr[i].top == this.arr[j].top && this.arr[i].bottom == this.arr[j].bottom){
+                            this.arr.splice(j, 1);
+                            i = 0;
+                        }
+                        // если блок i находится выше блока j, но верхняя точка блока j находится вышел нижней точки блока i
+                        else if(this.arr[i].top < this.arr[j].top && this.arr[i].bottom < this.arr[j].bottom && this.arr[i].bottom >= this.arr[j].top){
+                            this.arr[i].bottom = this.arr[j].bottom;
+                            this.arr.splice(j, 1);
+                            i = 0;
+                        }
+                        // если блок i находится "внутри" блока j
+                        else if((this.arr[i].top == this.arr[j].top && this.arr[i].bottom < this.arr[j].bottom) || (this.arr[i].top > this.arr[j].top && this.arr[i].bottom == this.arr[j].bottom) || (this.arr[i].top > this.arr[j].top && this.arr[i].bottom < this.arr[j].bottom)){
+                            this.arr[i].bottom = this.arr[j].bottom;
+                            this.arr[i].top = this.arr[j].top;
+                            this.arr.splice(j, 1);
+                            i = 0;
+                        }
+                        // если блок j находится "внутри" блока i
+                        else if((this.arr[i].top == this.arr[j].top && this.arr[i].bottom > this.arr[j].bottom) || (this.arr[i].top < this.arr[j].top && this.arr[i].bottom == this.arr[j].bottom) || (this.arr[i].top < this.arr[j].top && this.arr[i].bottom > this.arr[j].bottom)){
+                            this.arr.splice(j, 1);
+                            i = 0;
+                        }
+                        // если блок i начался раньше чем закончился блок j, но закончился позже
+                        else if(this.arr[i].top > this.arr[j].top && this.arr[i].bottom > this.arr[j].bottom && this.arr[i].top <= this.arr[j].bottom){
+                            this.arr[i].top = this.arr[j].top;
+                            this.arr.splice(j, 1);
+                            i = 0;
+                        }
+                    }
+                }
+
+
+                // считаем глубину контента
+                this.arr.forEach(function (item) {
+                    fullContentHeight += item.height;
+                });
+
+                this.sum_depth(cpTop, cpBottom);
+
+                if(fullContentHeight == 0){
+                    this.content_depth_percent = 0;
+                }
+                else{
+                    this.content_depth_percent = this.content_depth/fullContentHeight * 100;
+                }
+            }
+        },
+        sum_depth: function(cpTop, cpBottom){
+            var that = this;
+            this.arr.forEach(function (item) {
+               if(item.top < cpBottom && item.bottom <= cpBottom){
+                   if(item.watched == false){
+                       // вычесть высоты всех с watched true
+                       var test_depth = that.content_depth;
+                       for(var j = 0; j < that.arr.length; j++){
+                           if(that.arr[j].watched == true){
+                               test_depth -= that.arr[j].height
+                           }
+                       }
+                       // взять остаток и вычесть его из item.height
+                       test_depth = test_depth - item.height;
+
+                       // результат прибавить к depth и сделать watched true
+                       that.content_depth = that.content_depth - test_depth; // минус потому что переменная отрицательная
+                       item.watched = true;
+                   }
+               }
+               else if(item.top < cpBottom && item.bottom >= cpBottom && item.watched == false){
+                   // сумма высот всех просмотренных блоков
+                   var c_depth = 0;
+                   for(var k = 0; k < that.arr.length; k++){
+                       if(that.arr[k].watched == true){
+                           c_depth += that.arr[k].height
+                       }
+                   }
+
+                   // высота просмотренной части блока
+                   var diff = cpBottom - item.top;
+
+                   // суммарная высота - это высота всех просмотренных блоков + высота части просматриваемового блока
+                   if(diff && diff > 0){
+                       that.content_depth = diff + c_depth;
+                   }
+               }
+            });
+        },
+
+        // считывание времени чтения контента
+        calc_content_reading_time: function(){
+            // проверим что странница активна
+            this.page_visible = (document.hidden !== undefined) ? !document.hidden : this.page_visible;
+            var status = 0; // статус того, что на экране есть нужный блок
+            if (this.page_visible) {
+                var scrollTop = window.pageYOffset || document.documentElement.scrollTop || (document.body ? document.body.scrollTop : 0);
+                var cpTop = scrollTop,                              // верх экрана
+                  cpBottom = cpTop + window.innerHeight;      // низ экрана
+
+
+                // проверяем, есть ли блоки попавшие на экран
+                for (var index = 0; index < this.arr.length; index++) {
+                    if((this.arr[index].top > cpTop & this.arr[index].top < cpBottom) || (this.arr[index].bottom < cpBottom && this.arr[index].bottom > cpTop) || (this.arr[index].bottom < cpBottom && this.arr[index].top > cpTop)){
+                        status = 1;
+                    }
+                }
+
+                // если блок есть на экране, то счетчик времени увеличиваем.
+                if(status){
+                    this.content_reading_time++;
+                }
+            }
+        },
+
+        add_tracker: function() {
+            var r = encodeURIComponent(this.ref_full);
+            var u = encodeURIComponent(this.url);
+
+            var sn = document.createElement('script');
+            sn.type = 'text/javascript';
+            sn.async = true;
+            var daurl = '//data.giraff.io/track/' + this.name + '.js?r=' + r + '&u=' + u + '&rand=' + Math.random() + '&v=' + this.version;
+            if (this.is_vac) {
+                daurl += '&vac=1';
+            }
+            if (this.ref) {
+                daurl += '&ref=' + encodeURIComponent(this.ref);
+            }
+            if (this.vis) {
+                daurl += '&vis=1';
+            }
+            sn.src = daurl;
+            var c = document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0];
+            c.appendChild(sn);
+        },
+        send: function(uri) {
+            var da_url = '//data.giraff.io' + uri;
+            try {
+                var xn = new(XMLHttpRequest || ActiveXObject)('MSXML2.XMLHTTP.3.0');
+                xn.open('GET', da_url, 1);
+                xn.withCredentials = true;
+                xn.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+                xn.send();
+            } catch (e) {
+            }
+        },
+        send_tags: function(tags) {
+            var tag_str = (typeof tags == 'string') ? tags : tags.join('&tag=');
+            if (!tags.length) return;
+            this.send('/hit/' + this.name
+                + '?u=' + encodeURIComponent(this.url)
+                + '&tag=' + tag_str
+                + (this.ref ? '&ref=' + encodeURIComponent(this.ref) : '')
+                + '&rand=' + Math.random()
+            );
+        },
+        send_pv_tags: function(pv_tags) {
+            var filtered = [];
+            for (var i=0; i<pv_tags.length; i++) {
+                var t = pv_tags[i];
+                if (!this.pv_tags_sent[t]) {
+                    this.pv_tags_sent[t] = true;
+                    filtered.push(t)
+                }
+            }
+            if (filtered.length) {
+                this.send_tags(filtered);
+            }
+        },
+        send_click: function() {
+            if (this.inactive || this.active) {
+                //this.send_tags(this.inactive ? 'inactive_click' : 'active_click');
+            }
+            if (window.giraff && window.giraff.callbacks && window.giraff.callbacks.click) {
+                window.giraff.callbacks.click();
+            }
+        },
+        send_stat: function() {
+            var crt = this.arr && this.arr.length ? this.content_reading_time : this.reading_time;
+            var csd = this.arr && this.arr.length ? this.content_depth_percent : this.max_scroll_percent;
+            this.send('/reading/' + this.name
+                + '/?rt=' + this.reading_time
+                + '&sd='+ this.max_scroll_percent
+                + '&crt='+ crt
+                + '&csd='+ csd
+                + '&time=' + this.time_hash
+                + '&u=' + encodeURIComponent(this.url)
+                + (this.ref ? '&ref=' + encodeURIComponent(this.ref) : '')
+                + (this.social_stats ? '&' + this.social_stats.join('&') : '')
+                + '&rand=' + Math.random()
+            );
+        },
+        set_social_stats: function(sn_stat) {
+            if (!sn_stat.length) {
+                return;
+            }
+            var params = [];
+            var total_shares = 0;
+            for (var i=0; i<sn_stat.length; i++) {
+                params.push(sn_stat[i].name + '=' + sn_stat[i].count);
+                total_shares += parseInt(sn_stat[i].count);
+            }
+            if (total_shares) {
+                this.social_stats = params;
+            }
+        }
+    };
+
+    function GRF_Soc(stat) {
+        this.stat = stat;
+        this.sn_stat = [];
+    }
+    GRF_Soc.prototype = {
+        run: function(url) {
+            this.url = url;
+            this.url_enc = encodeURIComponent(this.url);
+
+            this.get_fb();
+            this.get_vk();
+            this.get_ok();
+        },
+        load: function(url) {
+            var s = document.createElement('script');
+            s.type = 'text/javascript';
+            s.async = true;
+            s.src = url;
+            var c = document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0];
+            c.appendChild(s);
+        },
+        send_stat: function(sn, cnt) {
+            this.sn_stat.push({name: sn, count: cnt});
+            if (this.sn_stat.length > 2) {
+                this.stat.set_social_stats(this.sn_stat);
+            }
+        },
+        get_fb: function() {
+            var that = this;
+            var callback_fb = '_grf_' + Math.random().toString().substr(2);
+            window[callback_fb] = function(data){
+                var shares = 0;
+                try {
+                    shares = data.share.share_count;
+                } catch(e) {}
+                that.send_stat('fb', shares);
+                window[callback_fb] = undefined;
+            };
+            this.load('https://graph.facebook.com/?id=' + this.url_enc + '&callback=' + callback_fb);
+        },
+        get_vk: function() {
+            var that = this;
+            var old = null;
+            var no_vk = !window.VK;
+            if (no_vk) {window.VK = {};}
+            var no_vk_share = !window.VK.Share;
+            if (no_vk_share) {window.VK.Share = {};}
+            var is_vk_share_count = !!window.VK.Share.count;
+            if (is_vk_share_count) {old = window.VK.Share.count;}
+            window.VK.Share.count = function(idx, cnt) {
+                that.send_stat('vk', cnt);
+                if (is_vk_share_count) {window.VK.Share.count = old;}
+                if (no_vk_share) {window.VK.Share = undefined;}
+                if (no_vk) {window.VK = undefined;}
+            };
+            this.load('https://vk.com/share.php?act=count&url=' + this.url_enc + '&index=0');
+        },
+        get_ok: function() {
+            var that = this;
+            var old = null;
+            var no_ok = !window.ODKL;
+            if (no_ok) {window.ODKL = {};}
+            var is_ok_count = !!window.ODKL.updateCount;
+            if (is_ok_count) {old = window.ODKL.updateCount;}
+            window.ODKL.updateCount = function(idx, cnt) {
+                that.send_stat('ok', cnt);
+                if (is_ok_count) {window.ODKL.updateCount = old;}
+                if (no_ok) {window.ODKL = undefined;}
+            };
+            this.load('https://connect.ok.ru/dk?st.cmd=extLike&uid=odklcnt0&ref=' + this.url_enc);
+        }
+    };
+
+    function GRF_JSONP(src, options) {
+        var options = options || {},
+            callback_name = options.callbackName || 'callback'+(Math.random()+"").substr(2),
+            on_success = options.onSuccess || function() {},
+            on_timeout = options.onTimeout || function() {},
+            timeout = options.timeout || 10;
+
+        src += '&callback=' + callback_name;
+
+        var timeout_trigger = window.setTimeout(function() {
+            window[callback_name] = function() {};
+            on_timeout();
+        }, timeout * 1000);
+
+        window[callback_name] = function(data) {
+            window.clearTimeout(timeout_trigger);
+            on_success(data);
+        };
+
+        var script = document.createElement('script');
+        var head = document.getElementsByTagName('head')[0];
+        script.type = 'text/javascript';
+        script.async = true;
+        script.src = src;
+        script.onload = function() {
+            head.removeChild(this);
+        };
+        head.appendChild(script);
+    };
+
+    function GRF_Cookies() {
+    }
+    GRF_Cookies.prototype = {
+        get: function (name) {
+            var matches = document.cookie.match(new RegExp(
+                "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+            ));
+            return matches ? decodeURIComponent(matches[1]) : undefined;
+        },
+        set: function(name, value, options) {
+            options = options || {};
+
+            var expires = options.expires;
+
+            if (typeof expires == "number" && expires) {
+                var d = new Date();
+                d.setTime(d.getTime() + expires * 1000);
+                expires = options.expires = d;
+            }
+            if (expires && expires.toUTCString) {
+                options.expires = expires.toUTCString();
+            }
+
+            value = encodeURIComponent(value);
+
+            var updatedCookie = name + "=" + value;
+
+            for (var propName in options) {
+                updatedCookie += "; " + propName;
+                var propValue = options[propName];
+                if (propValue !== true) {
+                    updatedCookie += "=" + propValue;
+                }
+            }
+
+            document.cookie = updatedCookie;
+        }
+    }
+
+    window.giraff = new GRF(version, config);
+
+    window.grf_change_article = function(url, elem, is_canonical) {
+        window.giraff.change_article(url, elem, is_canonical);
+        window.giraff.stats.clear_stats();
+    }
+
+    window.grf_run_widget = function(cb_name, options) {
+        window.giraff.callback_name = cb_name;
+        window.giraff.callback_options = options;
+        window.giraff.parent.postMessage("giraff:get_config", "*");
+    }
+
+    var history = window.history;
+    var oldPushState = history.pushState.bind(history);
+    history.pushState = function(state, title, url) {
+        window.giraff.stats.clear_stats();
+        return oldPushState(state, title, url);
+    };
+
+})(20180319152703, {"widgets": [{"aud": {"id": 1918287, "fill": 33}, "rev": {"id": 1918289, "fill": 33}, "int": {"id": 1918285, "fill": 34}, "rv": {"id": 1918289, "fill": 33}, "na": {"id": 1918287, "fill": 33}, "idx": 0, "ae": {"id": 1918285, "fill": 34}}], "url_settings": {"store_hash": false, "safe_params": []}, "name": "avtovzglyadru"});

@@ -1,0 +1,79 @@
+window._ons = {}
+
+window._mt_ot_adv = (window._mt_ot_adv||{})
+window._mt_ot_adv[ 29 ] = {
+	'stub':'',
+	'channel_height':'400',
+	'channel_width':'240',
+	'tmpl_run':'_MT_OtclickBannerStubRun'
+}
+
+function _MT_OtclickRun(placeId)
+{
+	if (typeof placeId == 'undefined')
+		return;
+	if (typeof _mt_ot_adv[ placeId ] == 'undefined')
+		return;
+	var ad = _mt_ot_adv[ placeId ]
+
+	var ad_empty = true
+	for(var prop in ad) {
+		if(ad.hasOwnProperty(prop)) {
+			ad_empty = false;
+			break;
+		}
+	}
+	if (ad_empty)
+		return;
+
+	var container = document.getElementById('_mt_ot_container_' + placeId)
+	if (! container)
+		return;
+
+	eval(ad.tmpl_run)(placeId, ad, container)
+}
+
+function _MT_OT_setIframeContent (f, c) {
+		
+	var doc;
+	if (f.contentDocument) // FF Chrome
+	  doc = f.contentDocument;
+	else if ( f.contentWindow ) // IE
+	  doc = f.contentWindow.document;
+		
+	doc.open()
+	doc.write('<html><head><title>Advertisement</title></head><body style="margin:0; padding:0; overflow:hidden;">')
+	doc.write(c)
+	doc.write('</body></html>')
+	doc.close()
+}
+
+function _MT_OtclickBannerStubRun(placeId, ad, ct)
+{
+	if (typeof ad.stub == 'undefined' || ad.stub == '')
+		return;
+
+	ct.style.margin = '0'
+	ct.style.padding = '0'
+	ct.style.marginLeft = 'auto'
+	ct.style.marginRight = 'auto'
+
+	var f = document.createElement('iframe')
+	ct.appendChild(f)
+
+	f.frameBorder = '0'
+	f.scrolling = 'no'
+	f.horizontalscrolling = 'no'
+	f.verticalscrolling = 'no'
+
+	f.height = ad.channel_height
+	f.width = ad.channel_width
+	f.marginHeight = '0'
+	f.marginWidth = '0'
+	f.padding = '0'
+	f.marginLeft = 'auto'
+	f.marginRight = 'auto'
+
+	_MT_OT_setIframeContent(f, ad.stub);
+}
+

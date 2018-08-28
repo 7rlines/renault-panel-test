@@ -1,0 +1,373 @@
+/* html5 banner v 1.0.6 */
+(function(URLs) {
+	for (var i = 0; i < URLs.length && URLs[i]; i++) {
+		if (!URLs[i].match(/adfox\.ru\/transparent\.gif$/)) {
+			(function(url, img) {
+				img.src = url;
+			})(URLs[i], new Image());
+		}
+	}
+})('http://banners.adfox.ru/transparent.gif'.split('|'));
+
+(function() {
+	var data = {
+		reference: {
+			value: 'http://www.finwhale.ru/production',
+			type: 'reference'
+		},
+		html5Creative: {
+			value: decodeURIComponent('%3C%21DOCTYPE%20html%3E%20%3Chtml%3E%3Chead%3E%3Cmeta%20name%3D%22GCD%22%20content%3D%22YTk3ODQ3ZWZhN2I4NzZmMzBkNTEwYjJl7edbe5e587c19b7b8a81524e1b1a115f%22%2F%3E%20%20%20%3Cmeta%20charset%3D%22utf-8%22%3E%20%20%20%3Ctitle%3EFinwhale%20Shock%20Absorbers%3C%2Ftitle%3E%20%20%20%3Cmeta%20name%3D%22generator%22%20content%3D%22Google%20Web%20Designer%202.0.5.0124%22%3E%20%20%20%3Cmeta%20name%3D%22template%22%20content%3D%22Expandable%203.0.0%22%3E%20%20%20%3Cmeta%20name%3D%22viewport%22%20content%3D%22width%3Ddevice-width%2C%20initial-scale%3D1.0%22%3E%20%20%20%3Clink%20href%3D%22https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DMontserrat%3A900%7CRoboto%3A300%22%20rel%3D%22stylesheet%22%3E%20%20%20%3Clink%20href%3D%22http%3A%2F%2Fbanners.adfox.ru%2F180307%2Fadfox%2F771128%2F2433059%2Fgwdpage_style.css%22%20rel%3D%22stylesheet%22%20data-version%3D%2211%22%20data-exports-type%3D%22gwd-page%22%3E%20%20%20%3Clink%20href%3D%22http%3A%2F%2Fbanners.adfox.ru%2F180307%2Fadfox%2F771128%2F2433059%2Fgwdpagedeck_style.css%22%20rel%3D%22stylesheet%22%20data-version%3D%2210%22%20data-exports-type%3D%22gwd-pagedeck%22%3E%20%20%20%3Clink%20href%3D%22http%3A%2F%2Fbanners.adfox.ru%2F180307%2Fadfox%2F771128%2F2433059%2Fgwdimage_style.css%22%20rel%3D%22stylesheet%22%20data-version%3D%2210%22%20data-exports-type%3D%22gwd-image%22%3E%20%20%20%3Cstyle%20type%3D%22text%2Fcss%22%20id%3D%22gwd-lightbox-style%22%3E.gwd-lightbox%20%7B%0D%0A%20%20%20%20overflow%3A%20hidden%3B%0D%0A%7D%3C%2Fstyle%3E%20%20%20%3Cstyle%20type%3D%22text%2Fcss%22%20id%3D%22gwd-text-style%22%3Ep%20%7B%0D%0A%20%20%20%20margin%3A%200px%3B%0D%0A%7D%0D%0Ah1%20%7B%0D%0A%20%20%20%20margin%3A%200px%3B%0D%0A%7D%0D%0Ah2%20%7B%0D%0A%20%20%20%20margin%3A%200px%3B%0D%0A%7D%0D%0Ah3%20%7B%0D%0A%20%20%20%20margin%3A%200px%3B%0D%0A%7D%3C%2Fstyle%3E%20%20%20%3Clink%20href%3D%22http%3A%2F%2Fbanners.adfox.ru%2F180307%2Fadfox%2F771128%2F2433059%2Fmain_style.css%22%20type%3D%22text%2Fcss%22%20rel%3D%22stylesheet%22%3E%20%20%20%3Cscript%20data-source%3D%22http%3A%2F%2Fbanners.adfox.ru%2F180307%2Fadfox%2F771128%2F2433059%2Fgoogbase_min.js%22%20data-version%3D%224%22%20data-exports-type%3D%22googbase%22%20src%3D%22http%3A%2F%2Fbanners.adfox.ru%2F180307%2Fadfox%2F771128%2F2433059%2Fgoogbase_min.js%22%3E%3C%2Fscript%3E%20%20%20%3Cscript%20data-source%3D%22http%3A%2F%2Fbanners.adfox.ru%2F180307%2Fadfox%2F771128%2F2433059%2Fgwd_webcomponents_min.js%22%20data-version%3D%225%22%20data-exports-type%3D%22gwd_webcomponents%22%20src%3D%22http%3A%2F%2Fbanners.adfox.ru%2F180307%2Fadfox%2F771128%2F2433059%2Fgwd_webcomponents_min.js%22%3E%3C%2Fscript%3E%20%20%20%3Cscript%20data-source%3D%22http%3A%2F%2Fbanners.adfox.ru%2F180307%2Fadfox%2F771128%2F2433059%2Fgwdpage_min.js%22%20data-version%3D%2211%22%20data-exports-type%3D%22gwd-page%22%20src%3D%22http%3A%2F%2Fbanners.adfox.ru%2F180307%2Fadfox%2F771128%2F2433059%2Fgwdpage_min.js%22%3E%3C%2Fscript%3E%20%20%20%3Cscript%20data-source%3D%22http%3A%2F%2Fbanners.adfox.ru%2F180307%2Fadfox%2F771128%2F2433059%2Fgwdpagedeck_min.js%22%20data-version%3D%2210%22%20data-exports-type%3D%22gwd-pagedeck%22%20src%3D%22http%3A%2F%2Fbanners.adfox.ru%2F180307%2Fadfox%2F771128%2F2433059%2Fgwdpagedeck_min.js%22%3E%3C%2Fscript%3E%20%20%20%3Cscript%20type%3D%22text%2Fjavascript%22%20src%3D%22%2F%2Fbanners.adfox.ru%2Ffiles%2Fadfox_HTML5.js%22%3E%3C%2Fscript%3E%20%20%20%3Cscript%20type%3D%22text%2Fjavascript%22%3E%0D%0A%20%20%20%20var%20flashVars%20%3D%20%7B%0D%0A%20%20%20%20%20%20reference%3A%20%22http%3A%2F%2Fads.adfox.ru%2F255662%2FgoLink%3Fpuid1%3Dundefined%26ylv%3D0.681%26hash%3D6792e50da715ad89%26ad-session-id%3D7824141521461799783%26ybv%3D0.681%26p2%3Dfodv%26ytt%3D69%26pr%3Dfbuysxu%26p1%3Dbwull%26p5%3Dfilff%26rand%3Deaylkix%26rqs%3DtybuGQ8AAABFqq9acQl3Bs1MdrRcYSD0%22%2C%0D%0A%20%20%20%20%20%20link%3A%20%22http%3A%2F%2Fwww.finwhale.ru%2Fproduction%22%2C%0D%0A%20%20%20%20%20%20target%3A%20%22_blank%22%2C%0D%0A%20%20%20%20%20%20rnd%3A%20parseInt%28%221283133570%22%29%20%7C%7C%20parseInt%28%221615010353%22%29%2C%0D%0A%20%20%20%20%20%20events%3A%20%5B%0D%0A%20%20%20%20%20%20%20%20%22%22%2C%0D%0A%20%20%20%20%20%20%20%20%22http%3A%2F%2Fads.adfox.ru%2F255662%2Fevent%3Fhash%3D6a375eaa88ac4f42%26pm%3Db%26utg%3Dbstjk%26p5%3Dfilff%26p1%3Dbwull%26pr%3Dfbuysxu%26ytt%3D69%26puid1%3Dundefined%26rand%3Dbsrnowl%26rqs%3DtybuGQ8AAABFqq9acQl3Bs1MdrRcYSD0%26lts%3Deybkter%26ylv%3D0.681%26ad-session-id%3D7824141521461799783%26p2%3Dfodv%26ybv%3D0.681%22%2C%0D%0A%20%20%20%20%20%20%20%20%22http%3A%2F%2Fads.adfox.ru%2F255662%2Fevent%3Fhash%3Dc29c8fc288841dd9%26pm%3Dc%26utg%3Dbstjk%26p5%3Dfilff%26p1%3Dbwull%26pr%3Dfbuysxu%26ytt%3D69%26puid1%3Dundefined%26rand%3Dctgvfmr%26rqs%3DtybuGQ8AAABFqq9acQl3Bs1MdrRcYSD0%26lts%3Deybkter%26ylv%3D0.681%26ad-session-id%3D7824141521461799783%26p2%3Dfodv%26ybv%3D0.681%22%2C%0D%0A%20%20%20%20%20%20%20%20%22http%3A%2F%2Fads.adfox.ru%2F255662%2Fevent%3Fhash%3Dfca2b206330de6a5%26pm%3Dd%26utg%3Dbstjk%26p5%3Dfilff%26p1%3Dbwull%26pr%3Dfbuysxu%26ytt%3D69%26puid1%3Dundefined%26rand%3Dmnfdzy%26rqs%3DtybuGQ8AAABFqq9acQl3Bs1MdrRcYSD0%26lts%3Deybkter%26ylv%3D0.681%26ad-session-id%3D7824141521461799783%26p2%3Dfodv%26ybv%3D0.681%22%2C%0D%0A%20%20%20%20%20%20%20%20%22http%3A%2F%2Fads.adfox.ru%2F255662%2Fevent%3Fhash%3D5af22594d3f5a164%26pm%3De%26utg%3Dbstjk%26p5%3Dfilff%26p1%3Dbwull%26pr%3Dfbuysxu%26ytt%3D69%26puid1%3Dundefined%26rand%3Dfsvpogm%26rqs%3DtybuGQ8AAABFqq9acQl3Bs1MdrRcYSD0%26lts%3Deybkter%26ylv%3D0.681%26ad-session-id%3D7824141521461799783%26p2%3Dfodv%26ybv%3D0.681%22%2C%0D%0A%20%20%20%20%20%20%20%20%22http%3A%2F%2Fads.adfox.ru%2F255662%2Fevent%3Fhash%3Dd910d2e673231e0e%26pm%3Df%26utg%3Dbstjk%26p5%3Dfilff%26p1%3Dbwull%26pr%3Dfbuysxu%26ytt%3D69%26puid1%3Dundefined%26rand%3Dutggaf%26rqs%3DtybuGQ8AAABFqq9acQl3Bs1MdrRcYSD0%26lts%3Deybkter%26ylv%3D0.681%26ad-session-id%3D7824141521461799783%26p2%3Dfodv%26ybv%3D0.681%22%2C%0D%0A%20%20%20%20%20%20%20%20%22http%3A%2F%2Fads.adfox.ru%2F255662%2Fevent%3Fhash%3D33428605f190dee6%26pm%3Dg%26utg%3Dbstjk%26p5%3Dfilff%26p1%3Dbwull%26pr%3Dfbuysxu%26ytt%3D69%26puid1%3Dundefined%26rand%3Dgextwoi%26rqs%3DtybuGQ8AAABFqq9acQl3Bs1MdrRcYSD0%26lts%3Deybkter%26ylv%3D0.681%26ad-session-id%3D7824141521461799783%26p2%3Dfodv%26ybv%3D0.681%22%2C%0D%0A%20%20%20%20%20%20%20%20%22http%3A%2F%2Fads.adfox.ru%2F255662%2Fevent%3Fhash%3Dae97fce5c2861636%26pm%3Dh%26utg%3Dbstjk%26p5%3Dfilff%26p1%3Dbwull%26pr%3Dfbuysxu%26ytt%3D69%26puid1%3Dundefined%26rand%3Ddnijacz%26rqs%3DtybuGQ8AAABFqq9acQl3Bs1MdrRcYSD0%26lts%3Deybkter%26ylv%3D0.681%26ad-session-id%3D7824141521461799783%26p2%3Dfodv%26ybv%3D0.681%22%2C%0D%0A%20%20%20%20%20%20%20%20%22http%3A%2F%2Fads.adfox.ru%2F255662%2Fevent%3Fhash%3Dd9908fe83e91c53d%26pm%3Di%26utg%3Dbstjk%26p5%3Dfilff%26p1%3Dbwull%26pr%3Dfbuysxu%26ytt%3D69%26puid1%3Dundefined%26rand%3Dzgxej%26rqs%3DtybuGQ8AAABFqq9acQl3Bs1MdrRcYSD0%26lts%3Deybkter%26ylv%3D0.681%26ad-session-id%3D7824141521461799783%26p2%3Dfodv%26ybv%3D0.681%22%2C%0D%0A%20%20%20%20%20%20%20%20%22http%3A%2F%2Fads.adfox.ru%2F255662%2Fevent%3Fhash%3D2668e576a07fe997%26pm%3Dj%26utg%3Dbstjk%26p5%3Dfilff%26p1%3Dbwull%26pr%3Dfbuysxu%26ytt%3D69%26puid1%3Dundefined%26rand%3Dcvvndpe%26rqs%3DtybuGQ8AAABFqq9acQl3Bs1MdrRcYSD0%26lts%3Deybkter%26ylv%3D0.681%26ad-session-id%3D7824141521461799783%26p2%3Dfodv%26ybv%3D0.681%22%2C%0D%0A%20%20%20%20%20%20%20%20%22http%3A%2F%2Fads.adfox.ru%2F255662%2Fevent%3Fhash%3D852b2fe36cb60e00%26pm%3Dk%26utg%3Dbstjk%26p5%3Dfilff%26p1%3Dbwull%26pr%3Dfbuysxu%26ytt%3D69%26puid1%3Dundefined%26rand%3Dccxwpam%26rqs%3DtybuGQ8AAABFqq9acQl3Bs1MdrRcYSD0%26lts%3Deybkter%26ylv%3D0.681%26ad-session-id%3D7824141521461799783%26p2%3Dfodv%26ybv%3D0.681%22%2C%0D%0A%20%20%20%20%20%20%20%20%22http%3A%2F%2Fads.adfox.ru%2F255662%2Fevent%3Fhash%3D4faab9daa660b2c2%26pm%3Dl%26utg%3Dbstjk%26p5%3Dfilff%26p1%3Dbwull%26pr%3Dfbuysxu%26ytt%3D69%26puid1%3Dundefined%26rand%3Dezghqri%26rqs%3DtybuGQ8AAABFqq9acQl3Bs1MdrRcYSD0%26lts%3Deybkter%26ylv%3D0.681%26ad-session-id%3D7824141521461799783%26p2%3Dfodv%26ybv%3D0.681%22%2C%0D%0A%20%20%20%20%20%20%20%20%22http%3A%2F%2Fads.adfox.ru%2F255662%2Fevent%3Fhash%3D798a60ca92c1f09a%26pm%3Dm%26utg%3Dbstjk%26p5%3Dfilff%26p1%3Dbwull%26pr%3Dfbuysxu%26ytt%3D69%26puid1%3Dundefined%26rand%3Dbjheypt%26rqs%3DtybuGQ8AAABFqq9acQl3Bs1MdrRcYSD0%26lts%3Deybkter%26ylv%3D0.681%26ad-session-id%3D7824141521461799783%26p2%3Dfodv%26ybv%3D0.681%22%2C%0D%0A%20%20%20%20%20%20%20%20%22http%3A%2F%2Fads.adfox.ru%2F255662%2Fevent%3Fhash%3D807a19fcf317953e%26pm%3Dn%26utg%3Dbstjk%26p5%3Dfilff%26p1%3Dbwull%26pr%3Dfbuysxu%26ytt%3D69%26puid1%3Dundefined%26rand%3Dftnzrzr%26rqs%3DtybuGQ8AAABFqq9acQl3Bs1MdrRcYSD0%26lts%3Deybkter%26ylv%3D0.681%26ad-session-id%3D7824141521461799783%26p2%3Dfodv%26ybv%3D0.681%22%2C%0D%0A%20%20%20%20%20%20%20%20%22http%3A%2F%2Fads.adfox.ru%2F255662%2Fevent%3Fhash%3D6d9ac18b27b252eb%26pm%3Do%26utg%3Dbstjk%26p5%3Dfilff%26p1%3Dbwull%26pr%3Dfbuysxu%26ytt%3D69%26puid1%3Dundefined%26rand%3Dgsjbjfy%26rqs%3DtybuGQ8AAABFqq9acQl3Bs1MdrRcYSD0%26lts%3Deybkter%26ylv%3D0.681%26ad-session-id%3D7824141521461799783%26p2%3Dfodv%26ybv%3D0.681%22%2C%0D%0A%20%20%20%20%20%20%20%20%22http%3A%2F%2Fads.adfox.ru%2F255662%2Fevent%3Fhash%3D5a66be2133c6aa50%26pm%3Dp%26utg%3Dbstjk%26p5%3Dfilff%26p1%3Dbwull%26pr%3Dfbuysxu%26ytt%3D69%26puid1%3Dundefined%26rand%3Dewytwmf%26rqs%3DtybuGQ8AAABFqq9acQl3Bs1MdrRcYSD0%26lts%3Deybkter%26ylv%3D0.681%26ad-session-id%3D7824141521461799783%26p2%3Dfodv%26ybv%3D0.681%22%2C%0D%0A%20%20%20%20%20%20%20%20%22http%3A%2F%2Fads.adfox.ru%2F255662%2Fevent%3Fhash%3D66cef8b6d5b3821a%26pm%3Dq%26utg%3Dbstjk%26p5%3Dfilff%26p1%3Dbwull%26pr%3Dfbuysxu%26ytt%3D69%26puid1%3Dundefined%26rand%3Dgseftz%26rqs%3DtybuGQ8AAABFqq9acQl3Bs1MdrRcYSD0%26lts%3Deybkter%26ylv%3D0.681%26ad-session-id%3D7824141521461799783%26p2%3Dfodv%26ybv%3D0.681%22%2C%0D%0A%20%20%20%20%20%20%20%20%22http%3A%2F%2Fads.adfox.ru%2F255662%2Fevent%3Fhash%3Db05cb9b3f3cb738a%26pm%3Dr%26utg%3Dbstjk%26p5%3Dfilff%26p1%3Dbwull%26pr%3Dfbuysxu%26ytt%3D69%26puid1%3Dundefined%26rand%3Dzjyhlx%26rqs%3DtybuGQ8AAABFqq9acQl3Bs1MdrRcYSD0%26lts%3Deybkter%26ylv%3D0.681%26ad-session-id%3D7824141521461799783%26p2%3Dfodv%26ybv%3D0.681%22%2C%0D%0A%20%20%20%20%20%20%20%20%22http%3A%2F%2Fads.adfox.ru%2F255662%2Fevent%3Fhash%3Dba16fd4bf69845e6%26pm%3Ds%26utg%3Dbstjk%26p5%3Dfilff%26p1%3Dbwull%26pr%3Dfbuysxu%26ytt%3D69%26puid1%3Dundefined%26rand%3Dcaeegac%26rqs%3DtybuGQ8AAABFqq9acQl3Bs1MdrRcYSD0%26lts%3Deybkter%26ylv%3D0.681%26ad-session-id%3D7824141521461799783%26p2%3Dfodv%26ybv%3D0.681%22%2C%0D%0A%20%20%20%20%20%20%20%20%22http%3A%2F%2Fads.adfox.ru%2F255662%2Fevent%3Fhash%3D945520ae9e7f53e2%26pm%3Dt%26utg%3Dbstjk%26p5%3Dfilff%26p1%3Dbwull%26pr%3Dfbuysxu%26ytt%3D69%26puid1%3Dundefined%26rand%3Dehrxvwa%26rqs%3DtybuGQ8AAABFqq9acQl3Bs1MdrRcYSD0%26lts%3Deybkter%26ylv%3D0.681%26ad-session-id%3D7824141521461799783%26p2%3Dfodv%26ybv%3D0.681%22%2C%0D%0A%20%20%20%20%20%20%20%20%22http%3A%2F%2Fads.adfox.ru%2F255662%2Fevent%3Fhash%3D54f718d2f1dfff16%26pm%3Du%26utg%3Dbstjk%26p5%3Dfilff%26p1%3Dbwull%26pr%3Dfbuysxu%26ytt%3D69%26puid1%3Dundefined%26rand%3Dgfjyfef%26rqs%3DtybuGQ8AAABFqq9acQl3Bs1MdrRcYSD0%26lts%3Deybkter%26ylv%3D0.681%26ad-session-id%3D7824141521461799783%26p2%3Dfodv%26ybv%3D0.681%22%2C%0D%0A%20%20%20%20%20%20%20%20%22http%3A%2F%2Fads.adfox.ru%2F255662%2Fevent%3Fhash%3D6cebeee27c566c67%26pm%3Dv%26utg%3Dbstjk%26p5%3Dfilff%26p1%3Dbwull%26pr%3Dfbuysxu%26ytt%3D69%26puid1%3Dundefined%26rand%3Dbtranuv%26rqs%3DtybuGQ8AAABFqq9acQl3Bs1MdrRcYSD0%26lts%3Deybkter%26ylv%3D0.681%26ad-session-id%3D7824141521461799783%26p2%3Dfodv%26ybv%3D0.681%22%2C%0D%0A%20%20%20%20%20%20%20%20%22http%3A%2F%2Fads.adfox.ru%2F255662%2Fevent%3Fhash%3D021584a446fc3d5a%26pm%3Dw%26utg%3Dbstjk%26p5%3Dfilff%26p1%3Dbwull%26pr%3Dfbuysxu%26ytt%3D69%26puid1%3Dundefined%26rand%3Ddairurk%26rqs%3DtybuGQ8AAABFqq9acQl3Bs1MdrRcYSD0%26lts%3Deybkter%26ylv%3D0.681%26ad-session-id%3D7824141521461799783%26p2%3Dfodv%26ybv%3D0.681%22%2C%0D%0A%20%20%20%20%20%20%20%20%22http%3A%2F%2Fads.adfox.ru%2F255662%2Fevent%3Fhash%3Df351c1713d20a566%26pm%3Dx%26utg%3Dbstjk%26p5%3Dfilff%26p1%3Dbwull%26pr%3Dfbuysxu%26ytt%3D69%26puid1%3Dundefined%26rand%3Dbplviwy%26rqs%3DtybuGQ8AAABFqq9acQl3Bs1MdrRcYSD0%26lts%3Deybkter%26ylv%3D0.681%26ad-session-id%3D7824141521461799783%26p2%3Dfodv%26ybv%3D0.681%22%2C%0D%0A%20%20%20%20%20%20%20%20%22http%3A%2F%2Fads.adfox.ru%2F255662%2Fevent%3Fhash%3D817fb56d23515624%26pm%3Dy%26utg%3Dbstjk%26p5%3Dfilff%26p1%3Dbwull%26pr%3Dfbuysxu%26ytt%3D69%26puid1%3Dundefined%26rand%3Dfmzwaqp%26rqs%3DtybuGQ8AAABFqq9acQl3Bs1MdrRcYSD0%26lts%3Deybkter%26ylv%3D0.681%26ad-session-id%3D7824141521461799783%26p2%3Dfodv%26ybv%3D0.681%22%2C%0D%0A%20%20%20%20%20%20%20%20%22http%3A%2F%2Fads.adfox.ru%2F255662%2Fevent%3Fhash%3D83ffb70299c12d05%26pm%3Dz%26utg%3Dbstjk%26p5%3Dfilff%26p1%3Dbwull%26pr%3Dfbuysxu%26ytt%3D69%26puid1%3Dundefined%26rand%3Dcdmiggu%26rqs%3DtybuGQ8AAABFqq9acQl3Bs1MdrRcYSD0%26lts%3Deybkter%26ylv%3D0.681%26ad-session-id%3D7824141521461799783%26p2%3Dfodv%26ybv%3D0.681%22%2C%0D%0A%20%20%20%20%20%20%20%20%22http%3A%2F%2Fads.adfox.ru%2F255662%2Fevent%3Fhash%3D00152222f0b8048b%26pm%3Dba%26utg%3Dbstjk%26p5%3Dfilff%26p1%3Dbwull%26pr%3Dfbuysxu%26ytt%3D69%26puid1%3Dundefined%26rand%3Ddschopg%26rqs%3DtybuGQ8AAABFqq9acQl3Bs1MdrRcYSD0%26lts%3Deybkter%26ylv%3D0.681%26ad-session-id%3D7824141521461799783%26p2%3Dfodv%26ybv%3D0.681%22%2C%0D%0A%20%20%20%20%20%20%20%20%22http%3A%2F%2Fads.adfox.ru%2F255662%2Fevent%3Fhash%3Dc21c70ab3b54489c%26pm%3Dbb%26utg%3Dbstjk%26p5%3Dfilff%26p1%3Dbwull%26pr%3Dfbuysxu%26ytt%3D69%26puid1%3Dundefined%26rand%3Dcftsirg%26rqs%3DtybuGQ8AAABFqq9acQl3Bs1MdrRcYSD0%26lts%3Deybkter%26ylv%3D0.681%26ad-session-id%3D7824141521461799783%26p2%3Dfodv%26ybv%3D0.681%22%2C%0D%0A%20%20%20%20%20%20%20%20%22http%3A%2F%2Fads.adfox.ru%2F255662%2Fevent%3Fhash%3D9cbe59c6bbcffa11%26pm%3Dbc%26utg%3Dbstjk%26p5%3Dfilff%26p1%3Dbwull%26pr%3Dfbuysxu%26ytt%3D69%26puid1%3Dundefined%26rand%3Dflncphp%26rqs%3DtybuGQ8AAABFqq9acQl3Bs1MdrRcYSD0%26lts%3Deybkter%26ylv%3D0.681%26ad-session-id%3D7824141521461799783%26p2%3Dfodv%26ybv%3D0.681%22%2C%0D%0A%20%20%20%20%20%20%20%20%22http%3A%2F%2Fads.adfox.ru%2F255662%2Fevent%3Fhash%3D9bea80064d760de9%26pm%3Dbd%26utg%3Dbstjk%26p5%3Dfilff%26p1%3Dbwull%26pr%3Dfbuysxu%26ytt%3D69%26puid1%3Dundefined%26rand%3Deuourmv%26rqs%3DtybuGQ8AAABFqq9acQl3Bs1MdrRcYSD0%26lts%3Deybkter%26ylv%3D0.681%26ad-session-id%3D7824141521461799783%26p2%3Dfodv%26ybv%3D0.681%22%2C%0D%0A%20%20%20%20%20%20%20%20%22http%3A%2F%2Fads.adfox.ru%2F255662%2Fevent%3Fhash%3Dfb9a7debfc1aa301%26pm%3Dbe%26utg%3Dbstjk%26p5%3Dfilff%26p1%3Dbwull%26pr%3Dfbuysxu%26ytt%3D69%26puid1%3Dundefined%26rand%3Deirqkwq%26rqs%3DtybuGQ8AAABFqq9acQl3Bs1MdrRcYSD0%26lts%3Deybkter%26ylv%3D0.681%26ad-session-id%3D7824141521461799783%26p2%3Dfodv%26ybv%3D0.681%22%0D%0A%20%20%20%20%20%20%5D%0D%0A%20%20%20%20%7D%3B%0D%0A%20%20%3C%2Fscript%3E%20%20%20%3Cscript%20data-source%3D%22http%3A%2F%2Fbanners.adfox.ru%2F180307%2Fadfox%2F771128%2F2433059%2Fgwdimage_min.js%22%20data-version%3D%2210%22%20data-exports-type%3D%22gwd-image%22%20src%3D%22http%3A%2F%2Fbanners.adfox.ru%2F180307%2Fadfox%2F771128%2F2433059%2Fgwdimage_min.js%22%3E%3C%2Fscript%3E%20%20%20%3Cscript%20type%3D%22text%2Fjavascript%22%20gwd-events%3D%22support%22%20src%3D%22http%3A%2F%2Fbanners.adfox.ru%2F180307%2Fadfox%2F771128%2F2433059%2Fgwd-events-support.1.0.js%22%3E%3C%2Fscript%3E%20%20%20%3Cscript%20type%3D%22text%2Fjavascript%22%20gwd-events%3D%22handlers%22%3E%0D%0A%20%20%20%20gwd.auto_Page1Event_1%20%3D%20function%28event%29%20%7B%0D%0A%20%20%20%20%20%20%2F%2F%20GWD%20Predefined%20Function%0D%0A%20%20%20%20%20%20gwd.actions.timeline.gotoAndPlay%28%27page1%27%2C%20%27label-1%27%29%3B%0D%0A%20%20%20%20%7D%3B%0D%0A%20%20%3C%2Fscript%3E%20%20%20%3Cscript%20type%3D%22text%2Fjavascript%22%20gwd-events%3D%22registration%22%3E%0D%0A%20%20%20%20%2F%2F%20%D0%9A%D0%BE%D0%B4%20%D0%B4%D0%BB%D1%8F%20%D0%BE%D0%B1%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D0%B8%20%D1%81%D0%BE%D0%B1%D1%8B%D1%82%D0%B8%D0%B9%20%D0%B2%20Google%20Web%20Designer%0D%0A%20%20%20%20%20%2F%2F%20%D0%AD%D1%82%D0%BE%D1%82%20%D0%B1%D0%BB%D0%BE%D0%BA%20%D1%81%D0%BA%D1%80%D0%B8%D0%BF%D1%82%D0%B0%20%D1%81%D0%BE%D0%B7%D0%B4%D0%B0%D0%B5%D1%82%D1%81%D1%8F%20%D0%B0%D0%B2%D1%82%D0%BE%D0%BC%D0%B0%D1%82%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%B8%2C%20%D0%BD%D0%B5%20%D0%B8%D0%B7%D0%BC%D0%B5%D0%BD%D1%8F%D0%B9%D1%82%D0%B5%20%D0%B5%D0%B3%D0%BE.%0D%0A%20%20%20%20gwd.actions.events.registerEventHandlers%20%3D%20function%28event%29%20%7B%0D%0A%20%20%20%20%20%20gwd.actions.events.addHandler%28%27page1%27%2C%20%27event-1%27%2C%20gwd.auto_Page1Event_1%2C%20false%29%3B%0D%0A%20%20%20%20%20%20gwd.actions.timeline.captureAnimationEnd%28document.body%29%3B%0D%0A%20%20%20%20%7D%3B%0D%0A%20%20%20%20gwd.actions.events.deregisterEventHandlers%20%3D%20function%28event%29%20%7B%0D%0A%20%20%20%20%20%20gwd.actions.events.removeHandler%28%27page1%27%2C%20%27event-1%27%2C%20gwd.auto_Page1Event_1%2C%20false%29%3B%0D%0A%20%20%20%20%20%20gwd.actions.timeline.releaseAnimationEnd%28document.body%29%3B%0D%0A%20%20%20%20%7D%3B%0D%0A%20%20%20%20document.addEventListener%28%22DOMContentLoaded%22%2C%20gwd.actions.events.registerEventHandlers%29%3B%0D%0A%20%20%20%20document.addEventListener%28%22unload%22%2C%20gwd.actions.events.deregisterEventHandlers%29%3B%0D%0A%20%20%3C%2Fscript%3E%20%3C%2Fhead%3E%20%20%3Cbody%20class%3D%22document-body%22%3E%3Ca%20href%3D%22http%3A%2F%2Fads.adfox.ru%2F255662%2FgoLink%3Fpuid1%3Dundefined%26ylv%3D0.681%26hash%3D6792e50da715ad89%26ad-session-id%3D7824141521461799783%26ybv%3D0.681%26p2%3Dfodv%26ytt%3D69%26pr%3Dfbuysxu%26p1%3Dbwull%26p5%3Dfilff%26rand%3Deaylkix%26rqs%3DtybuGQ8AAABFqq9acQl3Bs1MdrRcYSD0%26pf%3Dhttp%253A%252F%252Fwww.finwhale.ru%252Fproduction%22%20target%3D%22_blank%22%3E%20%20%20%3Cdiv%20is%3D%22gwd-pagedeck%22%20class%3D%22gwd-page-container%22%20id%3D%22pagedeck%22%3E%20%20%20%20%20%3Cdiv%20is%3D%22gwd-page%22%20id%3D%22page1%22%20class%3D%22gwd-page-wrapper%20page1-content%20gwd-lightbox%20gwd-div-1w5z%22%20data-gwd-width%3D%22240px%22%20data-gwd-height%3D%22400px%22%3E%20%20%20%20%20%20%20%3Cdiv%20class%3D%22gwd-page-content%20page1-content%20gwd-div-1jj0%22%3E%20%20%20%20%20%20%20%20%20%3Cimg%20is%3D%22gwd-image%22%20source%3D%22http%3A%2F%2Fbanners.adfox.ru%2F180307%2Fadfox%2F771128%2F2433059%2Ftop-a.svg%22%20id%3D%22logo%22%20class%3D%22gwd-img-94sm%22%3E%20%20%20%20%20%20%20%20%20%3Cimg%20is%3D%22gwd-image%22%20source%3D%22http%3A%2F%2Fbanners.adfox.ru%2F180307%2Fadfox%2F771128%2F2433059%2Famort-11.jpg%22%20id%3D%22amort-1%22%20class%3D%22gwd-img-1jbk%20gwd-gen-npy1gwdanimation%22%3E%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22gwd-p-acok%20gwd-p-iko4%20gwd-p-b5kq%20gwd-p-2wbs%20gwd-gen-wrsogwdanimation%20gwd-p-1qs8%22%3E%D0%A6%D0%95%D0%9D%D0%90%3C%2Fp%3E%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22gwd-p-acok%20gwd-p-1tt8%20gwd-gen-1ogpgwdanimation%20gwd-p-iyg0%20gwd-p-1aoc%22%3E%3Cspan%20class%3D%22gwd-span-k7fk%20gwd-span-vvi2%22%3E%D0%94%D0%9E%D0%A1%D0%A2%D0%A3%D0%9F%D0%9D%D0%90%D0%AF%3C%2Fspan%3E%20%20%20%20%20%20%20%20%20%3C%2Fp%3E%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22gwd-p-acok%20gwd-p-iko4%20gwd-p-b5kq%20gwd-p-2wbs%20gwd-gen-1mingwdanimation%20gwd-p-1o5i%22%3E%D0%A1%D0%9A%D0%9E%D0%A0%D0%9E%D0%A1%D0%A2%D0%AC%D0%AE%3C%2Fp%3E%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22gwd-p-acok%20gwd-p-1tt8%20gwd-p-iyg0%20gwd-gen-n1srgwdanimation%20gwd-p-16mz%22%3E%3Cspan%20class%3D%22gwd-span-k7fk%20gwd-span-1lon%22%3E%D0%A3%D0%9F%D0%A0%D0%90%D0%92%D0%9B%D0%95%D0%9D%D0%98%D0%95%3C%2Fspan%3E%20%20%20%20%20%20%20%20%20%3C%2Fp%3E%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22gwd-p-acok%20gwd-p-iko4%20gwd-p-hr44%20gwd-gen-d6f7gwdanimation%20gwd-p-18zb%22%3E%3Cspan%20class%3D%22gwd-span-1rkv%22%3E%D0%9A%D0%9E%D0%9C%D0%A4%D0%9E%D0%A0%D0%A2%D0%9D%D0%9E%D0%95%3C%2Fspan%3E%20%20%20%20%20%20%20%20%20%3C%2Fp%3E%20%20%20%20%20%20%20%20%20%3Cimg%20is%3D%22gwd-image%22%20source%3D%22http%3A%2F%2Fbanners.adfox.ru%2F180307%2Fadfox%2F771128%2F2433059%2Famort-21.jpg%22%20class%3D%22gwd-img-xwlk%20gwd-gen-mim4gwdanimation%22%20id%3D%22amort-2%22%3E%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22gwd-p-acok%20gwd-p-iko4%20gwd-p-b5kq%20gwd-p-1qv2%20gwd-gen-etq4gwdanimation%22%3E%D0%A3%D0%A1%D0%9B%D0%9E%D0%92%D0%98%D0%AF%D0%9C%3C%2Fp%3E%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22gwd-p-acok%20gwd-p-1tt8%20gwd-gen-1ixkgwdanimation%20gwd-p-w1gv%22%3E%D0%9A%20%D0%A0%D0%9E%D0%A1%D0%A1%D0%98%D0%99%D0%A1%D0%9A%D0%98%D0%9C%3C%2Fp%3E%20%20%20%20%20%20%20%20%20%3Cp%20class%3D%22gwd-p-acok%20gwd-p-iko4%20gwd-p-hr44%20gwd-gen-122zgwdanimation%20gwd-p-1pql%22%3E%D0%90%D0%94%D0%90%D0%9F%D0%A2%D0%90%D0%A6%D0%98%D0%AF%3C%2Fp%3E%20%20%20%20%20%20%20%20%20%3Csvg%20data-gwd-shape%3D%22rectangle%22%20class%3D%22gwd-svg-161c%20gwd-gen-i3pegwdanimation%22%20id%3D%22Verticalline%22%3E%3C%2Fsvg%3E%20%20%20%20%20%20%20%20%20%3Cdiv%20class%3D%22gwd-animation-event%20event-1-animation%22%20data-event-name%3D%22event-1%22%20data-event-time%3D%2211000%22%3E%3C%2Fdiv%3E%20%20%20%20%20%20%20%20%20%3Cimg%20is%3D%22gwd-image%22%20source%3D%22http%3A%2F%2Fbanners.adfox.ru%2F180307%2Fadfox%2F771128%2F2433059%2Fred-03.svg%22%20id%3D%22slogan%22%20class%3D%22gwd-img-4msb%20gwd-gen-s6g0gwdanimation%22%3E%20%20%20%20%20%20%20%3C%2Fdiv%3E%20%20%20%20%20%3Cdiv%20style%3D%22position%3A%20absolute%3B%20left%3A%200px%3B%20top%3A%200px%3B%20width%3A%20100%25%3B%20height%3A%201px%3B%20z-index%3A%209000%3B%20background-color%3A%20rgb%28194%2C%20194%2C%20194%29%3B%22%3E%3C%2Fdiv%3E%3Cdiv%20style%3D%22position%3A%20absolute%3B%20right%3A%200px%3B%20top%3A%200px%3B%20width%3A%201px%3B%20height%3A%20100%25%3B%20z-index%3A%209000%3B%20background-color%3A%20rgb%28194%2C%20194%2C%20194%29%3B%22%3E%3C%2Fdiv%3E%3Cdiv%20style%3D%22position%3A%20absolute%3B%20left%3A%200px%3B%20bottom%3A%200px%3B%20width%3A%20100%25%3B%20height%3A%201px%3B%20z-index%3A%209000%3B%20background-color%3A%20rgb%28194%2C%20194%2C%20194%29%3B%22%3E%3C%2Fdiv%3E%3Cdiv%20style%3D%22position%3A%20absolute%3B%20left%3A%200px%3B%20top%3A%200px%3B%20width%3A%201px%3B%20height%3A%20100%25%3B%20z-index%3A%209000%3B%20background-color%3A%20rgb%28194%2C%20194%2C%20194%29%3B%22%3E%3C%2Fdiv%3E%3C%2Fdiv%3E%20%20%20%3C%2Fdiv%3E%20%20%20%3Cscript%20type%3D%22text%2Fjavascript%22%20id%3D%22gwd-init-code%22%3E%0D%0A%20%20%20%20%28function%28%29%20%7B%0D%0A%20%20%20%20%20%20document.body.style.opacity%20%3D%20%220%22%3B%0D%0A%20%20%20%20%20%20var%20pageDeck%20%3D%20document.getElementById%28%27pagedeck%27%29%3B%0D%0A%20%20%20%20%20%20%2F%2A%2A%0D%0A%20%20%20%20%20%20%20%2A%20Handles%20the%20DOMContentLoaded%20event.%20The%20DOMContentLoaded%20event%20is%0D%0A%20%20%20%20%20%20%20%2A%20fired%20when%20the%20document%20has%20been%20completely%20loaded%20and%20parsed.%0D%0A%20%20%20%20%20%20%20%2A%2F%0D%0A%0D%0A%20%20%20%20%20%20function%20handleDomContentLoaded%28event%29%20%7B%7D%0D%0A%0D%0A%20%20%20%20%20%20%2F%2A%2A%0D%0A%20%20%20%20%20%20%20%2A%20Handles%20the%20WebComponentsReady%20event.%20This%20event%20is%20fired%20when%20all%0D%0A%20%20%20%20%20%20%20%2A%20custom%20elements%20have%20been%20registered%20and%20upgraded.%0D%0A%20%20%20%20%20%20%20%2A%2F%0D%0A%20%20%20%20%20%20function%20handleWebComponentsReady%28event%29%20%7B%0D%0A%20%20%20%20%20%20%20%20document.body.style.opacity%20%3D%20%22%22%3B%0D%0A%20%20%20%20%20%20%20%20setTimeout%28function%28%29%20%7B%0D%0A%20%20%20%20%20%20%20%20%20%20pageDeck.goToPage%28pageDeck.getDefaultPage%28%29.id%29%3B%0D%0A%20%20%20%20%20%20%20%20%7D%2C%200%29%3B%0D%0A%20%20%20%20%20%20%7D%0D%0A%0D%0A%20%20%20%20%20%20window.addEventListener%28%27DOMContentLoaded%27%2C%0D%0A%20%20%20%20%20%20%20%20handleDomContentLoaded%2C%20false%29%3B%0D%0A%20%20%20%20%20%20window.addEventListener%28%27WebComponentsReady%27%2C%0D%0A%20%20%20%20%20%20%20%20handleWebComponentsReady%2C%20false%29%3B%0D%0A%20%20%20%20%7D%29%28%29%3B%0D%0A%20%20%3C%2Fscript%3E%20%20%20%3C%2Fa%3E%3C%2Fbody%3E%3C%2Fhtml%3E').replace(/\\\`/gm, '`')
+		},
+		imageCreative: {
+			value: ''
+		},
+		widthBanner: {
+			value: '240',
+			type: 'size'
+		},
+		heightBanner: {
+			value: '400',
+			type: 'size'
+		},
+		styleWrapper: {
+			value: ''
+		},
+		functionCallback: {
+			value: '',
+			type: 'func'
+		},
+		altTextImage: {
+			value: ''
+		},
+		target: {
+			value: '_blank'
+		}
+	};
+
+	var Banner = function() {
+	/* global.banners v1.0.1 */
+	var undoList = [];
+
+	Banner.prototype.setUndo = function(undo) {
+		undoList.push(undo);
+	};
+
+	Banner.prototype.init = function() {
+		var async = !!1283133570;
+		var win = ( async ? parent : window );
+		var doc = win.document;
+		var rnd = 1283133570 || 1615010353;
+
+		if (async) {
+			setTimeout(function() {
+				document.close();
+			}, 100);
+			self.adfoxRemoveBanner = function() {
+				banner.remove();
+				win.eval(''+
+					'(function() {\n'+
+					'	var _iframe = document.getElementById(\'AdFox_iframe_' + rnd + '\'),\n'+
+					'		_parent = _iframe.parentNode;\n'+
+					'		_parent.removeChild(_iframe);\n'+
+					'		_parent.appendChild(_iframe);\n'+
+					'})()'+
+				'');
+			};
+			this.setUndo({
+				func: function() {
+					var wrapper = CreateParams.prototype.wrapper;
+					wrapper.innerHTML = '';
+					wrapper.style.cssText = '';
+				}
+			});
+		} else {
+			doc.write('<div id="AdFox_banner_' + rnd + '"></div>');
+			this.setUndo({
+				func: function() {
+					CreateParams.prototype.wrapper.removeChild(this.wrapper);
+				}
+			});
+		}
+
+		CreateParams.prototype = {
+			async: async,
+			win: win,
+			rnd: rnd,
+			doc: doc,
+			wrapper: doc.getElementById('AdFox_banner_' + rnd),
+			bannerId: 2433059,
+			validityErr: []
+		};
+	};
+
+	this.remove = function() {
+		for (var i = 0; i < undoList.length; i++) {
+			undoList[i].func();
+		}
+		undoList = [];
+	}
+};
+	var CreateParams = function(data) {
+	/* global.createParams v1.0.1 */
+	function validity(v, mask) {
+		var 
+			masks = {
+				size: [
+					/^\d+$/,
+					/^\d+px$/,
+					/^100%$/
+				],
+				bool: [
+					/^(?:yes|no)$/,
+					/^(?:true|false)$/,
+					/^(?:1|0)$/
+				]
+			};
+
+		if (typeof(mask) === 'string') {
+			mask = masks[mask];
+		} else {
+			mask = mask || [];
+		}
+
+		return mask.some(function(m) {
+			return v.match(m);
+		});
+	}
+
+	var setParams = {
+		manualy: function(v, mask, func) {
+			if (validity(v, mask)) {
+				if (func) {
+					return func(v);
+				} else {
+					return v;
+				}
+			} else {
+				CreateParams.prototype.validityErr.push('Указано не валидное значение размера: "' + v + '"');
+			}
+		},
+		reference: function(v) {
+			if (!v) {
+				return false;
+			} else if (v === 'http://ads.adfox.ru/255662/goLink?puid1=undefined&ylv=0.681&hash=6792e50da715ad89&ad-session-id=7824141521461799783&ybv=0.681&p2=fodv&ytt=69&pr=fbuysxu&p1=bwull&p5=filff&rand=eaylkix&rqs=tybuGQ8AAABFqq9acQl3Bs1MdrRcYSD0') {
+				return {
+					url: 'http://ads.adfox.ru/255662/goLink?puid1=undefined&ylv=0.681&hash=6792e50da715ad89&ad-session-id=7824141521461799783&ybv=0.681&p2=fodv&ytt=69&pr=fbuysxu&p1=bwull&p5=filff&rand=eaylkix&rqs=tybuGQ8AAABFqq9acQl3Bs1MdrRcYSD0',
+					urlEnc: 'http%3A%2F%2Fads.adfox.ru%2F255662%2FgoLink%3Fpuid1%3Dundefined%26ylv%3D0.681%26hash%3D6792e50da715ad89%26ad-session-id%3D7824141521461799783%26ybv%3D0.681%26p2%3Dfodv%26ytt%3D69%26pr%3Dfbuysxu%26p1%3Dbwull%26p5%3Dfilff%26rand%3Deaylkix%26rqs%3DtybuGQ8AAABFqq9acQl3Bs1MdrRcYSD0'
+				}
+			} else {
+				return {
+					url: 'http://ads.adfox.ru/255662/goLink?puid1=undefined&ylv=0.681&hash=6792e50da715ad89&ad-session-id=7824141521461799783&ybv=0.681&p2=fodv&ytt=69&pr=fbuysxu&p1=bwull&p5=filff&rand=eaylkix&rqs=tybuGQ8AAABFqq9acQl3Bs1MdrRcYSD0@' + v,
+					urlEnc: 'http%3A%2F%2Fads.adfox.ru%2F255662%2FgoLink%3Fpuid1%3Dundefined%26ylv%3D0.681%26hash%3D6792e50da715ad89%26ad-session-id%3D7824141521461799783%26ybv%3D0.681%26p2%3Dfodv%26ytt%3D69%26pr%3Dfbuysxu%26p1%3Dbwull%26p5%3Dfilff%26rand%3Deaylkix%26rqs%3DtybuGQ8AAABFqq9acQl3Bs1MdrRcYSD0@' + encodeURIComponent(v)
+				}
+			}
+		},
+		size: function(v) {
+			if (validity(v, 'size')) {
+				return {
+					style: ( v.indexOf('%') != -1 ? v : parseInt(v)+'px' ),
+					attribute: ( v.indexOf('%') != -1 ? v : parseInt(v) )
+				};
+			} else {
+				CreateParams.prototype.validityErr.push('Указано не валидное значение размера: "' + v + '"');
+			}
+		},
+		bool: function(v) {
+			if (validity(v, 'bool')) {
+				if (v.indexOf('yes') != -1 || v.indexOf('true') != -1 || v.indexOf('1') != -1) {
+					return true;
+				} else {
+					return false;
+				}
+			} else {
+				CreateParams.prototype.validityErr.push('Указано не валидное значение размера: "' + v + '"');
+			}
+		},
+		func: function(v) {
+			if (v && typeof(CreateParams.prototype.win[v]) !== 'undefined') {
+				return CreateParams.prototype.win[v];
+			} else {
+				return function(){};
+			}
+		}
+	};
+
+	for (var i in data) {
+		if (typeof(data[i].type) !== 'undefined') {
+			this[i] = setParams[data[i].type](data[i].value);
+		} else if (typeof(data[i].validity) !== 'undefined') {
+			this[i] = setParams.manual(data[i].value, data[i].validity, data[i].func);
+		} else {
+			this[i] = data[i].value;
+		}
+	}
+};
+	var Tools = function() {
+	/* global.tools v1.1.2 */
+	this.getNewValuesFaces = function(fromX, fromY, toX, toY) {
+		var
+			p = parseInt,
+			ratio = Math.min(
+				fromX === '100%' || p(toX)/p(fromX),
+				fromY === '100%' || p(toY)/p(fromY),
+				1
+			),
+			res = [fromX, fromY].map(function (value) {
+				return value === '100%' ? value : Math.ceil(p(value)*ratio) + 'px';
+			});
+
+		return {
+			w: res[0],
+			h: res[1]
+		}
+
+	};
+
+	this.addEvent = function(elem, eventType, eventHandler) {
+		if (typeof(eventType) === 'object') {
+			eventType.map(setEvent);
+		} else {
+			setEvent(eventType);
+		}
+
+		function setEvent(v) {
+			if(elem.addEventListener) {
+				elem.addEventListener(v, eventHandler, false);
+			} else if(elem.attachEvent)	{
+				elem.attachEvent('on' + v, eventHandler);
+			}
+		}
+
+	};
+
+	this.removeEvent = function(elem, eventType, eventHandler) {
+		if (typeof(eventType) === 'object') {
+			eventType.map(delEvent);
+		} else {
+			delEvent(eventType);
+		}
+
+		function delEvent(v) {
+			if(elem.removeEventListener) {
+				elem.removeEventListener(v, eventHandler, false);
+			} else if(elem.detachEvent)	{
+				elem.detachEvent('on' + v, eventHandler);
+			}
+		}
+
+	};
+
+	this.checkSupportHTML5 = function() {
+		return !!document.createElement('canvas').getContext && !(navigator.userAgent.indexOf('MSIE 9.0')+1) && !(navigator.userAgent.indexOf('Presto')+1);
+
+	};
+
+	this.cl = function(message) {
+		var div = document.createElement('div');
+		div.innerHTML = message;
+		console.log(div.innerHTML);
+
+	};
+
+	this.preventAction = function(evnt) {
+		var 
+			e = evnt || _win.event;
+
+		e.preventDefault();
+	}
+};
+	var FrameUtils = function(p) {
+	/* global.frameUtils v1.0.2 */
+	var _win;
+	var _doc;
+	var _html = p.html5Creative;
+	var _interval;
+
+	function checkRemoveFrame() {
+		var checkWin = false;
+		try {
+			checkWin = FrameUtils.prototype.getWindow('adfoxHtml5_iframe_' + p.rnd).win;
+		} catch (e) {}
+
+		if (checkWin == _win || checkWin === false) {
+			return;
+		}
+
+		p.win.eval('(new Image()).src = \'http://ads.adfox.ru/255662/event?hash=fb9a7debfc1aa301&pm=be&utg=bstjk&p5=filff&p1=bwull&pr=fbuysxu&ytt=69&puid1=undefined&rand=eirqkwq&rqs=tybuGQ8AAABFqq9acQl3Bs1MdrRcYSD0&lts=eybkter&ylv=0.681&ad-session-id=7824141521461799783&p2=fodv&ybv=0.681&htmlRnd=\' + Math.random();');
+		FrameUtils.prototype.writeHTML();
+	}
+
+	FrameUtils.prototype.getWindow = function(id) {
+		var element = p.doc.getElementById(id);
+
+		return {
+			element: element,
+			win: element.contentWindow
+		}
+	};
+
+	FrameUtils.prototype.writeHTML = function() {
+		_win = FrameUtils.prototype.getWindow('adfoxHtml5_iframe_' + p.rnd).win;
+		_doc = _win.document;
+		var _this = this;
+
+		if (_doc.readyState !== 'complete' && _doc.readyState !== 'interactive') {
+			setTimeout(function() {
+                _this.writeHTML();
+			}, 50);
+			return;
+		}
+
+		_doc.write(_html);
+		setTimeout(function() {_doc.close()}, 10);
+		clearInterval(_interval);
+		_interval = setInterval(checkRemoveFrame, 150);
+	};
+};
+
+	var banner = new Banner();
+	var tools = new Tools();
+	banner.init();
+	var params = new CreateParams(data);
+	if (params.validityErr.length) {
+		params.validityErr.map(function(v, div) {
+			tools.cl(v);
+		});
+		return;
+	}
+	params.supportHTML5 = tools.checkSupportHTML5() && params.html5Creative;
+	if (params.supportHTML5) {
+		var frameUtils = new FrameUtils(params);
+	}
+	banner.html = createHTML(params);
+	if (!banner.html) {
+		return;
+	}
+	runBanner(params);
+	params.functionCallback(banner);
+
+	function createHTML(p) {
+		var html = false;
+
+		if (p.supportHTML5) {
+			html = '<iframe id="adfoxHtml5_iframe_' + p.rnd + '" style="width: 1px; min-width: 100%; height: ' + p.heightBanner.style + ';" marginwidth="0" marginheight="0" scrolling="no" frameborder="0"></iframe>';
+		} else if (p.imageCreative) {
+			html = '<img src="' + p.imageCreative + '" alt="' + p.altTextImage + '" style="width: ' + p.widthBanner.style + '; height: ' + p.heightBanner.style + '; vertical-align: middle; border: 0px;">';
+
+			if (p.reference) {
+				html = '<a href="' + p.reference.url + '" target="' + p.target + '">' + html + '</a>';
+			}
+		}
+
+		return html;
+	}
+
+	function runBanner(p) {
+		p.wrapper.style.cssText = p.styleWrapper + 'width: ' + p.widthBanner.style + '; height: ' + p.heightBanner.style + ';';
+		p.wrapper.innerHTML = banner.html;
+
+		if (p.supportHTML5) {
+			frameUtils.writeHTML();
+		}
+	}
+})();

@@ -1,0 +1,54 @@
+
+function smiMK10998(teasers){
+    var html = '<div class="smiinformer10998">	<!-- teaser row -->	<div class="smiteaser-row10998">    <div class="smiteaser-container10998">        <div class="smiteaser10998">            <div class="smiimg10998">                <a href="%URL-0%" target="_blank"><img src="%IMG-0%" /></a>            </div>            <div class="smitext10998">                <a class="smititle10998" href="%URL-0%" target="_blank">%TITLE-0%</a>            </div>        </div>    </div>	</div>	<!-- end teaser row -->	<!-- teaser row -->	<div class="smiteaser-row10998">    <div class="smiteaser-container10998">        <div class="smiteaser10998">            <div class="smiimg10998">                <a href="%URL-1%" target="_blank"><img src="%IMG-1%" /></a>            </div>            <div class="smitext10998">                <a class="smititle10998" href="%URL-1%" target="_blank">%TITLE-1%</a>            </div>        </div>    </div>	</div>	<!-- end teaser row --></div>';
+
+    for(i=0; i< teasers.length; i++) {
+        html = html.replace(new RegExp('%TITLE-'+i+'%', 'g'), teasers[i][1]);
+        html = html.replace(new RegExp('%CAT-'+i+'%', 'g'), teasers[i][4]);
+        html = html.replace(new RegExp('%URL-'+i+'%', 'g'), teasers[i][3]);
+        html = html.replace(new RegExp('%IMG-'+i+'%', 'g'), teasers[i][2]);
+    }
+        
+    if(teasers.length == 0){
+            html = '';
+    }
+
+    if(smiEL10998){
+        smiEL10998.innerHTML = html;
+    }
+}
+
+var smiEL10998 = document.getElementById('smi_teaser_10998');
+
+if(smiEL10998 && 1) {
+    ST10998 = '.smiinformer10998 * {    font-size: 0;    padding: 0;    margin: 0;    border-width: 0;    box-sizing: border-box;}.smiinformer10998 {    border: 0px solid #fff;    width: 100%;}.smiteaser-container10998 {    display: inline-block;    width: 100%;    vertical-align: top;}.smiteaser-container10998:after {    display: table;    content: "";}.smiteaser10998 {    padding-bottom: 5px;}.smiteaser-container10998:last-child .smiteaser10998 {    margin-right: px;}.smiteaser-row10998:last-child .smiteaser10998 {    margin-bottom: px;}.smiteaser10998:after {    content: "";    display: table;    clear: both;}.smiteaser10998 {    border: 0px solid #fff;}.smiimg10998 {    float: left;    margin-right: 5px;}.smiimg10998 img {    border: 0px solid #fff;}a.smititle10998 {    font-family: inherit;    font-size: 13px;    color: #000;    font-weight: normal;    font-style: normal;    text-decoration: none;    }a.smititle10998:hover {    color: #000;    font-weight: normal;    font-style: normal;    text-decoration: none;}.smicat10998 {    font-size: 11px;    color: #000;}.smitext10998 {    text-align: left;}';
+    var smiST10998 = document.createElement('style');
+    smiST10998.type = 'text/css';
+    smiEL10998.parentNode.insertBefore(smiST10998,  smiEL10998);
+
+    if (smiST10998.styleSheet) {
+        smiST10998.styleSheet.cssText = ST10998;
+    } else {
+        smiST10998.appendChild(document.createTextNode(ST10998))
+    };
+
+    var smi_params = smi_params || [];
+    var smi_params_str = [];
+    for (var i = 0; i < smi_params.length; i++) {
+        element = smi_params[i];
+        if (element.length < 2) {
+            smi_params_str.push('params[]=' + element[0]);
+        } else {
+            smi_params_str.push(element[0]+'=' + element[1]);
+        }
+    }
+
+    smi_params_str = '&'+smi_params_str.join('&');
+
+    var smiDATE = new Date();
+    var smiDA10998 = document.createElement('script'); smiDA10998.type = 'text/javascript'; smiDA10998.async = true;
+    smiDA10998.src = '//data.24smi.net/informer?callback=smiMK10998&object=10998&t='+smiDATE.getYear() + smiDATE.getMonth() + smiDATE.getDay() + smiDATE.getHours() + '&r='+ Math.random() + smi_params_str;
+    smiDA10998.charset = 'utf8';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(smiDA10998, s);
+
+}

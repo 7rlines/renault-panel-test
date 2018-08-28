@@ -1,0 +1,1631 @@
+(function() {            
+           if((typeof jQuery !=='undefined')&& (!checkJqueryVersion2())){
+                continueLoadUiScript();
+            } 
+            else
+            {
+                loadScript("//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js",function(){
+                    console.log("upload-jquery");
+                     
+              
+                        loadScript("//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js",function(){
+                            console.log("upload-ui");
+                             
+                            loadScript("//j3b9v3f8.ssl.hwcdn.net/renteres/static/app/embed/jquery.ui.touch-punch.min.js",function(){
+                                console.log("jquery.ui.touch-punch.min.js");
+                                
+                                loadScript("//cdn.jsdelivr.net/fingerprintjs2/1.4.4/fingerprint2.min.js",function(){
+                                console.log("fingerprintjs2");
+                                
+                                if (!checkIfUaIsBot()){
+                                 try {
+                                        var fp = new Fingerprint2();
+                            
+                                        fp.get(function(result) {
+                                            console.log(result);
+                                            checkTrustedDomain(result);
+                                        });   
+                                     }catch(err)
+                                     {
+                                        checkTrustedDomain('1');
+                                     }
+                                 } 
+                                });
+                            });
+                        });
+                    })
+            }
+                                
+            function continueLoadUiScript()
+            {
+
+                        loadScript("//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js",function(){
+                            console.log("upload-ui");
+                             
+                            loadScript("//j3b9v3f8.ssl.hwcdn.net/renteres/static/app/embed/jquery.ui.touch-punch.min.js",function(){
+                                console.log("jquery.ui.touch-punch.min.js");
+                                
+                                loadScript("//cdn.jsdelivr.net/fingerprintjs2/1.4.4/fingerprint2.min.js",function(){
+                                console.log("fingerprintjs2");
+                                
+                                if (!checkIfUaIsBot()){
+                                 try {
+                                     
+                                        var fp = new Fingerprint2();
+                            
+                                        fp.get(function(result) {
+                                            console.log(result);
+                                            checkTrustedDomain(result);
+                                        });   
+                                     }catch(err)
+                                     {
+                                        checkTrustedDomain('1');
+                                     }
+                                 } 
+                                });
+                            });
+                        });                  
+            }
+             
+            function continueLoadUiTouchScript()
+            {
+                loadScript("//j3b9v3f8.ssl.hwcdn.net/renteres/static/app/embed/jquery.ui.touch-punch.min.js",function(){
+                    console.log("jquery.ui.touch-punch.min.js");
+                    checkTrustedDomain('1');
+                });
+            }
+            
+            function checkJqueryVersion()
+            {
+                var arr = jQuery.fn.jquery.split('.');
+                    
+                    if(arr[0] > 1 || (arr[0] == 1 && arr[1] > 10))
+                    {
+                        return true;
+                    }
+                    else 
+                    {
+                        return false;
+                    }
+            }
+                        function checkJqueryVersion2()
+            {            
+                    if("1.8.2" == jQuery.fn.jquery)
+                    {
+                        return true;
+                    }
+                    else 
+                    {
+                        return false;
+                    }
+            }
+            function checkIfUaIsBot()
+            {
+              return  (/bot|google|aolbuild|baidu|bing|msn|duckduckgo|teoma|slurp|yandex/i
+                .test(navigator.userAgent));
+            }
+            
+              function checkTrustedDomain(fingerprint){
+                
+                var support;
+                        
+                        if (navigator.cookieEnabled){
+                            support = '1';
+                        }
+                        else
+                        {
+                             support = '0';
+                        }
+                
+                jQuery.ajax({
+                        type: 'POST',
+                        url: '//app.renteres.ru/web/kit-1.2/checkTrustedKit.php',
+                        timeout: 3000,
+                        data: { 
+                                                   renteresID: window.renteresID,
+                                                   url         : window.location.href.split('#')[0],
+                                                   fingerprint :fingerprint,
+                                                   support:            support
+                                        },
+                        contentType: 'application/x-www-form-urlencoded',
+                        xhrFields: {
+                                withCredentials: true
+                       },
+                        headers: {},
+                        success: function(json ) {
+
+                        var parsedJson = jQuery.parseJSON(json);
+                               
+                             //       console.log(parsedJson);
+                                    
+                                    if (parsedJson.trusted === 'true'){
+                                        
+                                    //start renteres    
+                                    startEmbed(fingerprint,parsedJson);
+                                    
+                                    //updateAnalytics
+                                    updateAnayltics(parsedJson.domain_id,window.location.href.split('#')[0],fingerprint,support);
+                                }else{
+                                    console.log("not trusted domain");
+                                }
+                          
+                        },
+                        error: function(err) {
+                                    console .log('trusted check error->' + err);
+                        }
+             });
+            }
+            
+            function startEmbed(fingerprint,trustedJSON)
+            {
+                var b,iframeOpen,lastPosition,currentPosition,wasDragged,alreadyClick,bol,overflow_x,overflow_y,isMobile,url; 
+                var position = 0;
+                var timerIntervalID;
+                var background;
+                var iconWasClick = false;
+                var isShareSocialClick = false;   
+                var iframeIsAlreadyLoad = false;
+                    iframeOpen    = false;
+                    wasDragged    = true;
+                    alreadyClick  = false; 
+                    wasLoading    = false; 
+                    
+                   var currentUrl;
+                   var lastUrl; 
+                   var newUrl;
+                   
+                    if (fingerprint == '')
+                    {
+                        fingerprint='1';
+                    }
+                    
+                    console.log(document.getElementById('embed-script')
+                                         .getAttribute('data-timestamp'));
+                     
+                                 
+                    // Get the position att, if there isnt so the default is top-right
+                     try {
+                            positionOfRent = document.getElementById('embed-script')
+                                         .getAttribute('position').split('-');
+                         } catch(err) {
+                            positionOfRent = ["top", "right"];
+                         }
+                       
+                       
+                        //chat
+                        if (trustedJSON.user_id) {
+                            isHasMessages();
+                                            
+                        jQuery(document).ready(function(){
+                        loadScript("//j3b9v3f8.ssl.hwcdn.net/renteres/static/app/embed/Autolinker.js", function() {
+                            
+                        loadScript("//app.renteres.ru/embed/chat/chat.js", function() {
+                               initChat(trustedJSON.user_id, trustedJSON.username, trustedJSON.language, 
+                               trustedJSON.user_pic,trustedJSON.domain_id, 
+                               trustedJSON.user_ip, trustedJSON.feed_color, trustedJSON.sound,
+                                       trustedJSON.verify == 1);
+                        });
+                        
+                        });
+                    });
+                        }
+                         /*
+                        if ('serviceWorker' in navigator) {
+                             // Check if push messaging is supported  
+                            navigator.serviceWorker.register('/embed/notification/sw.js');
+                        }
+            */  
+                    
+                    b = document.getElementsByTagName('body')[0];
+                    //add font awesome
+                    jQuery('head').append('<link rel=stylesheet href=//netdna.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.css type=text/css />');
+                    //add css style
+                    jQuery('head').append('<link rel=stylesheet href=//app.renteres.ru/embed/inject/style-embed_1.3.css type=text/css />');
+                  
+                  //feed
+                   if (trustedJSON.feed_ind == 1) {
+                        var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                        if (!isMobile || trustedJSON.feed_mobile_ind == 1) {
+                        loadScript("//app.renteres.ru/embed/feed/feed.js",function(){
+                            window.feedTop = trustedJSON.feed_top;
+                            window.domain_id = trustedJSON.domain_id;
+                            window.feedSide = trustedJSON.feed_side;
+                            window.feedColor = trustedJSON.feed_color;
+                            console.log("load feed-system");
+                            startFeed(trustedJSON);
+                         });
+                        }
+                   }
+                   
+                    //SNS                                                                              
+                    if (window.renteresID =='IWaStrQSBzRb' || window.renteresID =='X1vxCK5CHBYV' ||  window.renteresID =='sevUQBuEA9'){
+                    loadScript("//j3b9v3f8.ssl.hwcdn.net/renteres/static/app/embed/jquery.mobile.custom.js",function(){
+                        loadScript("//app.renteres.ru/embed/sns/1.7/sns.js",function(){
+                                console.log("load sns-system");
+                                window.fingerprint = fingerprint;
+                                window.domain_id = trustedJSON.domain_id;
+                        jQuery('head').append('<link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css type=text/css />');
+                        jQuery('head').append('<link rel=stylesheet href=//app.renteres.ru/embed/sns/1.7/sns.css type=text/css />');
+                        startSns();
+                      });
+                    });     
+                    
+                    }
+                    
+                    //by canonical
+                    if (window.renteresID =='UMMHjZ5ADewg')
+                    {
+                         newUrl = document.querySelector("link[rel='canonical']").getAttribute("href");
+                         //check if canonical existent 
+                         if (newUrl == '')
+                         {
+                              newUrl = window.location.href.split('#')[0];
+                         }
+                    }
+                    else
+                    {
+                         newUrl = window.location.href.split('#')[0];
+                    }
+                    
+                     //timer for check url changing
+                    if (window.renteresID =='T1rgrrjt1mCU' || window.renteresID =='Rb7vddeE7xV9'  || window.renteresID =='fTYnGGFzyXIs'){ 
+                   lastUrl          = window.location.href.split('#')[0];
+                   
+                    window. setInterval(function(){
+                            currentUrl =  window.location.href.split('#')[0];
+                            if (currentUrl != lastUrl)
+                            {
+                                     console.log("url changed");
+                                     lastUrl =  currentUrl;
+                                     newUrl  =  currentUrl;
+                                     getBadgeNumber(newUrl,jQuery('#renteres-number'));
+                                      jQuery('#renteres-embed-iframe').attr('src',"//app.renteres.ru/embed/index.php?url=" + newUrl + "identifier=" + window.identifier + "&identifierDomain="+ window.renteresID + "&title=" + document.title
+                                                                      +"&fp=" + fingerprint);
+                            }   
+                    },3000);
+                }
+                             //embeb comment button
+                             if (("#renteres-comment-embed").length > 0 ) {
+                                            jQuery("#renteres-comment-embed").html('<span  id="renteres-comment-embed-btn" class="renteres-comment-embed-btn">Обсудить <span id="comment-embed-count">(<span id="renteres-comment-embed-count"></span>)</span> </span>');
+                             }     
+                             
+                             
+                            var renteresRoot = document.createElement("div");
+                                  renteresRoot.setAttribute("id","renteres-root"); 
+                            /* 
+                            var loadingRenteres = document.createElement("div");
+                                loadingRenteres.setAttribute("id","loading-renteres"); 
+                                
+                            var loadingRenteresDiv = document.createElement("div");
+                                loadingRenteresDiv.setAttribute("id","logo-loading");    
+                                loadingRenteres.appendChild(loadingRenteresDiv);
+                                
+                            var loadingImg = document.createElement("img");
+                                loadingImg.src = "//app.renteres.ru/embed/image/logopopon.gif";
+                                loadingRenteresDiv.appendChild(loadingImg);
+                                initLoadingIconCss(loadingRenteres);
+                                renteresRoot.appendChild(loadingRenteres);
+                             */    
+                            var rootRenteresIcon = document.createElement("div");
+                                rootRenteresIcon.setAttribute("id","renteres-icon");
+                              //  rootRenteresIcon.setAttribute("class","renteres-icon-open");
+                                rootRenteresIcon.setAttribute("class","renteres-icon-heart");
+                                renteresRoot.appendChild(rootRenteresIcon);
+                                
+                            var renteresNumber = document.createElement("div");
+                                renteresNumber.setAttribute("id","renteres-number");  
+                                rootRenteresIcon.appendChild(renteresNumber);
+                                getBadgeNumber(newUrl,renteresNumber);
+                                
+                            var heartImg = document.createElement("div");
+                                heartImg.className = "renteres-icon-svg";
+                                rootRenteresIcon.appendChild(heartImg);     
+     
+                            var renteresIframe = document.createElement("div");    
+                                renteresIframe.setAttribute("id","renteres-iframe");  
+                             
+                                renteresRoot.appendChild(renteresIframe);
+                                 b.appendChild(renteresRoot); 
+                                 
+                            
+                              
+                   window.addEventListener("message", function(ev) {
+                                if (ev.data.message === "numberOFComments") {
+                                    if (!wasLoading){
+                                       // renteresRoot.removeChild(loadingRenteres);
+                                        //renteresRoot.appendChild(rootRenteresIcon);
+                                        
+                                        wasLoading = true;
+                                    }
+                                    if (ev.data.numOfComment > 999)
+                                    {
+                                                //update the bubble count number
+                                           jQuery("#renteres-number").text('1k');
+
+                                           //update the embed comment btn count
+                                           jQuery("#renteres-comment-embed-count").text('1k');
+                                    }
+                                    else
+                                    {
+                                            //update the bubble count number
+                                            jQuery("#renteres-number").text(ev.data.numOfComment);
+
+                                            //update the embed comment btn count
+                                            jQuery("#renteres-comment-embed-count").text(ev.data.numOfComment);
+                                    }
+                                    
+                                    
+                                }
+                                if (ev.data.message === "notification") {
+                                    spawnNotification(ev.data.notificationData); 
+                                  }
+                                if (ev.data.message === "getIframeHeight") {
+                                     var iframe = document.getElementById('renteres-embed-iframe').contentWindow;
+                                         iframe.postMessage({ message: "heightIframe", height: jQuery('#renteres-embed-iframe').height(),width:jQuery('#renteres-embed-iframe').width()}, "*"); 
+                                  }  
+                                if (ev.data.message === "getWindowWidth") {
+                                        
+                                     var iframe = document.getElementById('renteres-embed-iframe').contentWindow;
+                                         iframe.postMessage({ message: "widthWindow", width:jQuery(window).width()}, "*"); 
+                                  } 
+                                if (ev.data.message === "openUrl") { 
+                                     window.open(ev.data.url);
+                                  } 
+                                  
+                                   if (ev.data.message === "checkTrustedDomain") { 
+                                            if  (ev.data.identifierDomain === window.renteresID){
+                                                      console.log('start remove loading iframe');
+                                                      var x_size = window.top.outerWidth / 2 + window.top.screenX - ( 450 / 2);
+                                                      var y_size = window.top.outerHeight / 2 + window.top.screenY - ( 450 / 2);
+                                                      
+                                                     
+                                                      var iframe = document.getElementById('renteres-embed-iframe').contentWindow;    
+                                                            iframe.postMessage({ message: "trustedDomain",language:trustedJSON.language,notification:trustedJSON.notification,domain_id:trustedJSON.domain_id,user_id:trustedJSON.user_id,
+                                                                                            title:document.title,url:newUrl,x_orig_page:x_size,y_orig_page:y_size,image:jQuery('meta[property="og:image"]').attr('content')}, "*"); 
+                                              }
+                                        } 
+                                });
+                                
+                                jQuery('<iframe>', {
+                                    src        : "//app.renteres.ru/embed/analytics.php?url="+ newUrl+ "&identifierDomain="+ window.renteresID + "&title=" + document.title ,
+                                    id         :     'renteres-embed-iframe-anayltics',
+                                    frameborder: '0',
+                                    scrolling  : 'no'
+                                    //height:'528'
+                                }).appendTo(renteresIframe);
+                                 
+                                if ((!isMobileScreen() && trustedJSON.share_side_ind == 1) || (isMobileScreen() && trustedJSON.share_side_mobile_ind == 1))
+                                {
+                                     var LeftModuleRenteres = document.createElement("div"); 
+                                           LeftModuleRenteres.setAttribute("id","left-module-renteres");
+                                            if(isMobileScreen())     
+                                            {
+                                                   jQuery(LeftModuleRenteres).css({bottom:'15%'});
+                                            }
+                                           
+                                      var socialRenteres = document.createElement("div"); 
+                                            socialRenteres.setAttribute("id","social-renteres");
+                                                         // socialRenteres.className = "threed";
+
+
+                                            LeftModuleRenteres.appendChild(socialRenteres);
+
+                                      var shareIcon = document.createElement("i"); 
+                                            shareIcon.setAttribute("id","social-share");
+                                            shareIcon.className = "fa fa-share-alt fa-lg"; 
+ 
+                                            socialRenteres.appendChild(shareIcon);
+
+
+                                            jQuery(socialRenteres).hover(function(e){
+
+                                                    jQuery(divSocialElem).fadeIn("slow");
+                                                          },function(){
+                                                              if(!isShareSocialClick){ 
+                                                              jQuery(divSocialElem).fadeOut("slow");
+                                                          }
+                                                          }); 
+
+                                             jQuery(socialRenteres).on("click",function(e){
+
+                                                  if(e.target !== this)
+                                                  {
+                                                        return;
+                                                  }
+                                                  if (!isShareSocialClick){
+                                                        isShareSocialClick = true;
+                                                         jQuery(divSocialElem).fadeIn("slow");
+                                                  }
+                                                  else
+                                                  {
+                                                         isShareSocialClick = false;
+                                                         jQuery(divSocialElem).fadeOut("slow");
+                                                  }
+                                              });     
+                                                     
+                                      var divSocialElem =  document.createElement("div");     
+                                            divSocialElem.setAttribute("id","social-share-element");  
+                                            socialRenteres.appendChild(divSocialElem);
+
+                                      var divSocialWrap =  document.createElement("div");     
+                                            divSocialWrap.setAttribute("id","social-share-wrap");  
+                                            divSocialElem.appendChild(divSocialWrap);     
+
+                                      var divFacebook = document.createElement("div"); 
+                                            jQuery(divFacebook).on("click",facebookShare);
+                                            divSocialWrap.appendChild(divFacebook); 
+
+
+                                      var aFacebook = document.createElement("a"); 
+                                            aFacebook.className = "facebook-share"; 
+                                            divFacebook.appendChild(aFacebook); 
+
+                                      var iFacebook = document.createElement("i"); 
+                                            iFacebook.className = "fa fa-facebook fa-lg renteres-fa"; 
+                                            aFacebook.appendChild(iFacebook); 
+
+                                      var divTwitter = document.createElement("div"); 
+                                            jQuery(divTwitter).on("click",twitterShare);
+                                            divSocialWrap.appendChild(divTwitter); 
+
+                                      var aTwitter = document.createElement("a"); 
+                                            aTwitter.className = "twitter-share"; 
+                                            divTwitter.appendChild(aTwitter); 
+
+                                      var iTwitter = document.createElement("i"); 
+                                            iTwitter.className = "fa fa-twitter fa-lg renteres-fa"; 
+                                            aTwitter.appendChild(iTwitter);      
+
+                                      var divVk = document.createElement("div"); 
+                                            jQuery(divVk).on("click",vkShare);
+                                            divSocialWrap.appendChild(divVk); 
+
+                                      var aVk = document.createElement("a"); 
+                                            aVk.className = "vk-share"; 
+                                            divVk.appendChild(aVk); 
+
+                                      var iVk = document.createElement("i"); 
+                                            iVk.className = "fa fa-vk fa-lg renteres-fa"; 
+                                            aVk.appendChild(iVk);     
+
+                                      var divOdnoklassniki  = document.createElement("div"); 
+                                            jQuery(divOdnoklassniki).on("click",okShare);
+                                            divSocialWrap.appendChild(divOdnoklassniki); 
+
+                                      var aOdnoklassniki = document.createElement("a"); 
+                                            aOdnoklassniki.className = "od-share"; 
+                                            divOdnoklassniki.appendChild(aOdnoklassniki); 
+
+                                      var iOdnoklassniki = document.createElement("i"); 
+                                            iOdnoklassniki.className = "fa fa-odnoklassniki fa-lg renteres-fa"; 
+                                            aOdnoklassniki.appendChild(iOdnoklassniki);  
+
+                                      var divMailRu  = document.createElement("div"); 
+                                            jQuery(divMailRu).on("click",mailRuShare);
+                                            divSocialWrap.appendChild(divMailRu); 
+
+                                      var aMailRu = document.createElement("a"); 
+                                            aMailRu.className = "mailru-share"; 
+                                            divMailRu.appendChild(aMailRu); 
+
+                                      var iMailRu = document.createElement("i"); 
+                                            iMailRu.className = "fa fa-at fa-lg renteres-fa"; 
+                                            aMailRu.appendChild(iMailRu);     
+
+                                      var divTrinangle  = document.createElement("div"); 
+                                            divTrinangle.className = "share-trinangle";
+                                            divSocialElem.appendChild(divTrinangle);     
+                                                     /*
+                                                     var  spanSocail = document.createElement("span");
+                                                          jQuery(spanSocail).text("Нажмите здесь");  
+                                                          socialRenteres.appendChild(spanSocail);
+                                                     */     
+                                      var spaceModuleRenteres = document.createElement("div"); 
+                                            spaceModuleRenteres.className = "space-module";
+                                            LeftModuleRenteres.appendChild(spaceModuleRenteres);   
+
+                                      var helloRenteres  = document.createElement("div"); 
+                                            helloRenteres.setAttribute("id","hello-renteres");
+                                            helloRenteres.className = "tooltips threed";
+                                            LeftModuleRenteres.appendChild(helloRenteres);
+
+                                           if (!isMobileScreen()){
+                                                  var  spanTollTips = document.createElement("span");
+                                                         jQuery(spanTollTips).text("Нажмите здесь");  
+                                                         helloRenteres.appendChild(spanTollTips);
+                                            }
+
+                                      var leftRenteresHello = document.createElement("div");
+                                            leftRenteresHello.setAttribute("class","left-renteres-hello");
+                                            jQuery(leftRenteresHello).text("Комментировать");
+                                            helloRenteres.appendChild(leftRenteresHello);
+
+                                      var rightRenteresHello = document.createElement("div");
+                                            rightRenteresHello.setAttribute("class","right-renteres-hello");    
+                                            helloRenteres.appendChild(rightRenteresHello);
+
+                                      var logoRentereshHello = document.createElement("div");
+                                            logoRentereshHello.setAttribute("class","logo-renteres-hello");   
+                                            rightRenteresHello.appendChild(logoRentereshHello);
+
+                                            b.appendChild(LeftModuleRenteres);
+
+                                            window.setTimeout ( function(){
+                                                          //      console.log('width'+jQuery(".left-renteres-hello").outerWidth());
+                                                  var w = jQuery(".left-renteres-hello").outerWidth();
+                                                  var widthMoveHello =  -w +6;
+
+                                                        jQuery(LeftModuleRenteres).css({left:widthMoveHello});
+                                                               //mobile checking for bar to not move
+                                                               /*
+                                                               if (!isMobileScreen()){
+                                                              if (!localStorage.clickcountRenteresHello) { 
+                                                            timerIntervalID  =       window.setInterval(function(){ 
+                                                                             jQuery(helloRenteres).animate({
+                                                              left: "+="+ (-widthMoveHello)+"px"
+                                                              });
+                                                              window.setTimeout ( function(){
+                                                                  jQuery(helloRenteres).animate({
+                                                              left: "-="+(-widthMoveHello)+"px"
+                                                              })},5000);
+                                                            }, 20000);}}*/
+                                                            },1000);
+                                            }
+                                
+                                
+                               
+                 
+                                 
+                                 
+                                jQuery( renteresRoot).draggable({
+                                 containment: "window",                                                        
+                                start: function( event, ui ) {
+                                       lastPosition= renteresRoot.getBoundingClientRect();
+             
+                                     
+                                },
+                                stop: function( event, ui ) {
+                                        wasDragged = true;
+                                        currentPosition= renteresRoot.getBoundingClientRect();
+        
+                                    }
+                                });
+                                 
+                                if(isMobileScreen())
+                                {
+                                    isMobile = true ;
+                                    initStartCssMobile(positionOfRent, renteresRoot, renteresIframe, rootRenteresIcon);
+                                     jQuery("#renteres-embed-iframe").css("max-height","100%");
+                                }
+                                else
+                                {
+                                    isMobile = false ;
+                                    initStartCss(positionOfRent, renteresRoot, renteresIframe, rootRenteresIcon);
+                                }
+                             
+                                lastPosition = renteresRoot.getBoundingClientRect();
+                                currentPosition = lastPosition;
+                              
+                                jQuery(renteresRoot).css("position","fixed");
+                                jQuery(renteresIframe).css("display","none");
+                                 
+                                 
+                                if (isMobile)  
+                                {
+                                   //renteresRoot.addEventListener("touchend", function(e){
+                                  jQuery(renteresRoot).add('#renteres-comment-embed-btn').add('#renteres-comment-embed-btn2').on('touchend', function(e,json){
+                                       e.preventDefault();
+                                   alreadyClick = true; 
+                                   jQuery('#renteres-icon').css('opacity','1.0');
+                                   
+                                   if (typeof json == 'undefined')
+                                    {
+                                         json= {action:'not_from_feed'};
+                                    }
+                                    
+                                    if (wasDragged )
+                                    {
+                                        if(checkTouchIcon(lastPosition,currentPosition))
+                                        {                                       
+                                            if(!iframeOpen || json.action == 'from-feed')
+                                            {    
+                                                position = 5;
+                                                if (!iconWasClick){
+                                                     jQuery('<iframe>', {
+                                                        src        : "//app.renteres.ru/embed/index.php?url="+ newUrl + "&identifier=" + window.identifier + "&identifierDomain="+ window.renteresID + "&title=" + document.title,
+                                                        id         :     'renteres-embed-iframe',
+                                                        frameborder: '0',
+                                                        scrolling  : 'no'
+                                                        //height:'528'
+                                                    }).appendTo(renteresIframe);
+                                                    iconWasClick = true;
+                                                    
+                                                    jQuery('#renteres-embed-iframe').load(function() 
+                                                           {
+                                                                if (!iframeIsAlreadyLoad){
+                                                                    if (json.type == 'login-dialog')
+                                                                    {
+                                                                        var iframe = document.getElementById('renteres-embed-iframe').contentWindow;
+                                                                              iframe.postMessage({ message: "login-dialog"}, "*");
+                                                                    }
+                                                                    else if(json.type == 'profile-slide')
+                                                                    {
+                                                                         var iframe = document.getElementById('renteres-embed-iframe').contentWindow;
+                                                                               iframe.postMessage({ message: "open-profile", user_id:currComment.user_id}, "*"); 
+                                                                    }
+                                                                    iframeIsAlreadyLoad = true;
+                                                               }
+                                                           });
+                                                }
+                                              
+                                                locateIconMobileScreen();
+                                                jQuery(renteresIframe).fadeIn();
+                                                if(isMobileScreen()) 
+                                                {
+                                                     jQuery("#renteres-root").draggable( 'disable');
+                                                }
+                                                jQuery(heartImg).hide();
+                                                jQuery(rootRenteresIcon).removeClass('renteres-icon-heart');
+                                                jQuery(rootRenteresIcon).addClass('renteres-icon-close');
+                                               // jQuery(rootRenteresIcon).css("background", 'url(//app.renteres.ru/embed/image/LogoPopClose.png)');
+                                               replaceBubbleBack();
+                                                iframeOpen = true;
+                                            }
+                                            else
+                                            {
+                                                position = 6;
+                                                jQuery("#renteres-root").css("position","fixed");
+                                                jQuery("#renteres-root").draggable( 'enable');
+                                                if(isMobileScreen())
+                                                {
+                                                   setRootRenteresForDragOnMobile(overflow_x,overflow_y);
+                                                }
+                                    
+                                               // jQuery(rootRenteresIcon).css("background", 'url(//app.renteres.ru/embed/image/LogoPop.png)');
+                                                  jQuery(renteresIframe).hide();
+                                                  jQuery(rootRenteresIcon).removeClass('renteres-icon-close');
+                                                  jQuery(rootRenteresIcon).addClass('renteres-icon-heart');
+                                                  jQuery(heartImg).show();
+                                                   iframeOpen = false;
+                                            }
+                                        }
+                                         wasDragged = false;
+                                        
+                                    }
+                                    else
+                                    {
+                                        if(!iframeOpen && position !== 2 && position !== 4 && position !== 6  || (json.action == 'from-feed'))
+                                        {          
+                                            position = 7;
+                                            if (!iconWasClick){
+                                                    jQuery('<iframe>', {
+                                                        src        : "//app.renteres.ru/embed/index.php?url="+ newUrl + "&identifier=" + window.identifier + "&identifierDomain="+ window.renteresID + "&title=" + document.title,
+                                                        id         :     'renteres-embed-iframe',
+                                                        frameborder: '0',
+                                                        scrolling  : 'no'
+                                                        //height:'528'
+                                                    }).appendTo(renteresIframe);
+                                                   
+                                                    iconWasClick = true;
+                                                    
+                                                    jQuery('#renteres-embed-iframe').load(function() 
+                                                           {
+                                                                if (!iframeIsAlreadyLoad){
+                                                                    if (json.type == 'login-dialog')
+                                                                    {
+                                                                        var iframe = document.getElementById('renteres-embed-iframe').contentWindow;
+                                                                              iframe.postMessage({ message: "login-dialog"}, "*");
+                                                                    }
+                                                                    else if(json.type == 'profile-slide')
+                                                                    {
+                                                                         var iframe = document.getElementById('renteres-embed-iframe').contentWindow;
+                                                                               iframe.postMessage({ message: "open-profile", user_id:json.user_id}, "*"); 
+                                                                    }
+                                                                    iframeIsAlreadyLoad = true;
+                                                               }
+                                                           });
+                                                }
+                                              
+                                            locateIconMobileScreen();
+                                            
+                                            jQuery(renteresIframe).fadeIn();
+                                             
+                                            if(isMobileScreen())
+                                            {
+                                                jQuery("#renteres-root").draggable( 'disable');
+                                            }
+                                            jQuery(heartImg).hide();
+                                            jQuery(rootRenteresIcon).removeClass('renteres-icon-heart');
+                                            jQuery(rootRenteresIcon).addClass('renteres-icon-close');
+                                               // jQuery(rootRenteresIcon).css("background", 'url(//app.renteres.ru/embed/image/LogoPopClose.png)');
+                                               replaceBubbleBack();
+                                            iframeOpen = true;
+                                        }
+                                        else if(iframeOpen)
+                                        {
+                                            position = 8;
+                                            jQuery("#renteres-root").draggable( 'enable');
+                                            jQuery("#renteres-root").css("position","fixed");
+                                            if(isMobileScreen())
+                                            {
+                                                setRootRenteresForDragOnMobile(overflow_x,overflow_y);
+                                            }
+
+                                            jQuery(renteresIframe).hide(); 
+                                           // jQuery(rootRenteresIcon).css("background", 'url(//app.renteres.ru/embed/image/LogoPop.png)');
+                                            jQuery(rootRenteresIcon).removeClass('renteres-icon-close');
+                                            jQuery(rootRenteresIcon).addClass('renteres-icon-heart');
+                                            jQuery(heartImg).show();
+                                            iframeOpen = false;
+                                        }
+                                        position = 0;
+                                    }
+
+                                    bol = 0; 
+                                    fixPositionIconAndIframeOnPage(iframeOpen);
+                                });
+                              
+                            }
+                            else
+                            {
+                                    jQuery(rootRenteresIcon).add('#hello-renteres').add('#renteres-comment-embed-btn').add('#renteres-comment-embed-btn2').on("click", function (e,json){
+                                    alreadyClick = true; 
+                                    jQuery('#renteres-icon').css('opacity','1.0');
+                                    
+                                    if (typeof json == 'undefined')
+                                    {
+                                         json= {action:'not_from_feed'};
+                                    }
+                                    
+                                    if (wasDragged )
+                                    {
+                                        if(checkTouchIcon(lastPosition,currentPosition))
+                                        {                                       
+                                            if(!iframeOpen || json.action == 'from-feed')
+                                            {    
+                                                position = 5;
+                                                //locate icon on top right when open kit
+                                                if(window.renteresID  =='kj8Ojl9gAeve'){
+                                                     jQuery(renteresRoot).css({top:'auto',bottom:'5px',right:'5px',left:'auto'});       
+                                                }
+                                                if(window.renteresID  =='nKRGEkFcm3g6'){
+                                                     jQuery(renteresRoot).css({top:'5px',right:'5px',left:'auto'});       
+                                                }
+                                                if(window.renteresID  =='UMMHjZ5ADewg'){
+                                                     jQuery(renteresRoot).css({top:'20px',right:'5px',left:'auto'});     
+                                                }
+                                                if (!iconWasClick){
+                                                    jQuery('<iframe>', {
+                                                        src        : "//app.renteres.ru/embed/index.php?url="+ newUrl + "&identifier=" + window.identifier + "&identifierDomain="+ window.renteresID + "&title=" + document.title,
+                                                        id         :     'renteres-embed-iframe',
+                                                        frameborder: '0',
+                                                        scrolling  : 'no'
+                                                        //height:'528'
+                                                    }).appendTo(renteresIframe);
+                                                  
+                                                    iconWasClick = true;
+                                                    
+                                                    jQuery('#renteres-embed-iframe').load(function() 
+                                                           {
+                                                                if (!iframeIsAlreadyLoad){
+                                                                    if (json.type == 'login-dialog')
+                                                                    {
+                                                                        var iframe = document.getElementById('renteres-embed-iframe').contentWindow;
+                                                                              iframe.postMessage({ message: "login-dialog"}, "*");
+
+
+                                                                    }else if(json.type == 'profile-slide')
+                                                                    {
+                                                                         var iframe = document.getElementById('renteres-embed-iframe').contentWindow;
+                                                                               iframe.postMessage({ message: "open-profile", user_id:json.user_id}, "*"); 
+                                                                    }
+                                                                    iframeIsAlreadyLoad = true;
+                                                               }
+                                                           });  
+                                                }
+                                                 locateIconMobileScreen();
+                      
+                                                jQuery(renteresIframe).fadeIn();
+                                      
+                                                if(isMobileScreen()) 
+                                                {
+                                                     jQuery("#renteres-root").draggable( 'disable');
+                                                }
+                                                 
+                                                //jQuery(rootRenteresIcon).css("background", 'url(//app.renteres.ru/embed/image/LogoPopClose.png)');
+                                                jQuery(heartImg).hide();
+                                                jQuery(rootRenteresIcon).removeClass('renteres-icon-heart');
+                                                jQuery(rootRenteresIcon).addClass('renteres-icon-close');
+                                                replaceBubbleBack();
+                                                iframeOpen = true;
+                                            }
+                                            else
+                                            {
+                                                position = 6;
+                                            
+                                                jQuery("#renteres-root").css("position","fixed");
+                                                if(isMobileScreen())
+                                                {
+                                                   setRootRenteresForDragOnMobile(overflow_x,overflow_y);
+                                                }
+                                                if(window.renteresID  =='kj8Ojl9gAeve'){
+                                                     jQuery(renteresRoot).css({top:'auto',bottom:'50%',right:'auto',left:'10px'});       
+                                                }
+                                                if(window.renteresID  =='nKRGEkFcm3g6'){
+                                                     jQuery(renteresRoot).css({top:'200px',right:'5px',left:'auto'});     
+                                                }
+                                                if(window.renteresID  =='UMMHjZ5ADewg'){
+                                                     jQuery(renteresRoot).css({top:'150px',right:'5px',left:'auto'});     
+                                                }
+                                                jQuery(renteresIframe).hide(); 
+                                                //jQuery(rootRenteresIcon).css("background", 'url(//app.renteres.ru/embed/image/LogoPop.png)');
+                                                jQuery(rootRenteresIcon).removeClass('renteres-icon-close');
+                                                jQuery(rootRenteresIcon).addClass('renteres-icon-heart');
+                                                jQuery(heartImg).show();
+                                                iframeOpen = false;
+                                            }
+                                        }
+                                        wasDragged = false;
+                                    }
+                                    else
+                                    {
+                                        if(!iframeOpen && position !== 2 && position !== 4 && position !== 6  || (json.action == 'from-feed') )
+                                        {          
+                                            position = 7;
+                                            if(window.renteresID  =='kj8Ojl9gAeve'){
+                                                     jQuery(renteresRoot).css({top:'auto',bottom:'5px',right:'5px',left:'auto'});       
+                                                }
+                                            if(window.renteresID  =='nKRGEkFcm3g6'){
+                                                     jQuery(renteresRoot).css({top:'5px',right:'5px',left:'auto'});       
+                                                }
+                                                if(window.renteresID  =='UMMHjZ5ADewg'){
+                                                     jQuery(renteresRoot).css({top:'20px',right:'5px',left:'auto'});     
+                                                }
+                                            //Check if is mobile screen.
+                                             if (!iconWasClick){
+                                                    jQuery('<iframe>', {
+                                                        src        : "//app.renteres.ru/embed/index.php?url="+ newUrl + "&identifier=" + window.identifier + "&identifierDomain="+ window.renteresID + "&title=" + document.title,
+                                                        id         :     'renteres-embed-iframe',
+                                                        frameborder: '0',
+                                                        scrolling  : 'no'
+                                                        //height:'528'
+                                                    }).appendTo(renteresIframe);
+                                                  
+                                                    iconWasClick = true;
+                                                    
+                                                    jQuery('#renteres-embed-iframe').load(function() 
+                                                           {
+                                                                if (!iframeIsAlreadyLoad){
+                                                                    if (json.type == 'login-dialog')
+                                                                    {
+                                                                        var iframe = document.getElementById('renteres-embed-iframe').contentWindow;
+                                                                              iframe.postMessage({ message: "login-dialog"}, "*");
+                                                                    }
+                                                                    else if(json.type == 'profile-slide')
+                                                                    {
+                                                                         var iframe = document.getElementById('renteres-embed-iframe').contentWindow;
+                                                                               iframe.postMessage({ message: "open-profile", user_id:json.user_id}, "*"); 
+                                                                    }
+                                                                    iframeIsAlreadyLoad = true;
+                                                               }
+                                                           });
+                                                }
+                                                 locateIconMobileScreen();
+
+                                            jQuery(renteresIframe).fadeIn();
+    
+                                            if(isMobileScreen())
+                                            {
+                                                jQuery("#renteres-root").draggable( 'disable');
+                                            }
+                                          //  jQuery(rootRenteresIcon).css("background", 'url(//app.renteres.ru/embed/image/LogoPopClose.png)');
+                                            jQuery(heartImg).hide();
+                                            jQuery(rootRenteresIcon).removeClass('renteres-icon-heart');
+                                            jQuery(rootRenteresIcon).addClass('renteres-icon-close');
+                                            replaceBubbleBack();
+                                            iframeOpen = true;
+                                        }
+                                        else if(iframeOpen)
+                                        {
+                                            position = 8;
+                                            jQuery("#renteres-root").draggable( 'enable');
+                                            jQuery("#renteres-root").css("position","fixed");
+                                            if(isMobileScreen())
+                                            {
+                                                setRootRenteresForDragOnMobile(overflow_x,overflow_y);
+                                            }
+                                            if(window.renteresID  =='kj8Ojl9gAeve'){
+                                                     jQuery(renteresRoot).css({top:'auto',bottom:'50%',right:'auto',left:'10px'});       
+                                                }
+                                            if(window.renteresID  =='nKRGEkFcm3g6'){
+                                                     jQuery(renteresRoot).css({top:'200px',right:'5px',left:'auto'});     
+                                                }  
+                                             if(window.renteresID  =='UMMHjZ5ADewg'){
+                                                     jQuery(renteresRoot).css({top:'150px',right:'5px',left:'auto'});     
+                                              }   
+                                            jQuery(renteresIframe).hide(); 
+                                            //jQuery(rootRenteresIcon).css("background", 'url(//app.renteres.ru/embed/image/LogoPop.png)');
+                                            jQuery(rootRenteresIcon).removeClass('renteres-icon-close');
+                                            jQuery(rootRenteresIcon).addClass('renteres-icon-heart');
+                                            jQuery(heartImg).show();
+                                            iframeOpen = false;
+                                        }
+                                        position = 0;
+                                    }
+                                    wasDragged = true;
+                                    bol = 0; 
+                                    fixPositionIconAndIframeOnPage(iframeOpen);
+                                });
+                            }
+                                 
+                                jQuery(rootRenteresIcon ).add('#hello-renteres').add('#renteres-comment-embed-btn').add('#renteres-comment-embed-btn2').mouseup(function() {
+                                    if(wasDragged)
+                                    {
+                                        wasDragged    = false;
+                                        fixPositionIconAndIframeOnPage(iframeOpen);
+                                    }    
+                                    window.clearTimeout(timerIntervalID);
+                                    if (localStorage.clickcountRenteresHello) {
+                                        localStorage.clickcountRenteresHello = Number(localStorage.clickcountRenteresHello) + 1;
+                                    } else {
+                                        localStorage.clickcountRenteresHello = 1;
+                                    }
+                                });
+                                
+                                //for hello click
+                                 jQuery('#hello-renteres').on('touchend', function (e){
+                        
+                                   e.preventDefault();
+                                   alreadyClick = true; 
+                                   wasDragged = false;
+                                   window.clearTimeout(timerIntervalID);
+                                   if (localStorage.clickcountRenteresHello) {
+                                        localStorage.clickcountRenteresHello = Number(localStorage.clickcountRenteresHello) + 1;
+                                    } else {
+                                        localStorage.clickcountRenteresHello = 1;
+                                    }
+                                        if(!iframeOpen && position !== 2 && position !== 4 && position !== 6  )
+                                        {          
+                                            position = 7;
+                                            locateIconMobileScreen();
+                                            jQuery(renteresIframe).fadeIn();
+                                             
+                                            if(isMobileScreen())
+                                            {
+                                                jQuery("#renteres-root").draggable( 'disable');
+                                            }
+                                            jQuery(heartImg).hide();
+                                            jQuery(rootRenteresIcon).removeClass('renteres-icon-heart');
+                                            jQuery(rootRenteresIcon).addClass('renteres-icon-close');
+                                            replaceBubbleBack();
+                                               // jQuery(rootRenteresIcon).css("background", 'url(//app.renteres.ru/embed/image/LogoPopClose.png)');
+                                            iframeOpen = true;
+                                        }
+                                        else if(iframeOpen)
+                                        {
+                                            position = 8;
+                                            jQuery("#renteres-root").draggable( 'enable');
+                                            jQuery("#renteres-root").css("position","fixed");
+                                            if(isMobileScreen())
+                                            {
+                                                setRootRenteresForDragOnMobile(overflow_x,overflow_y);
+                                            }
+
+                                            jQuery(renteresIframe).hide(); 
+                                           // jQuery(rootRenteresIcon).css("background", 'url(//app.renteres.ru/embed/image/LogoPop.png)');
+                                            jQuery(rootRenteresIcon).removeClass('renteres-icon-close');
+                                            jQuery(rootRenteresIcon).addClass('renteres-icon-heart');
+                                            jQuery(heartImg).show();
+                                            iframeOpen = false;
+                                        }
+                                        position = 0;
+                                    
+
+                                    bol = 0; 
+                                    fixPositionIconAndIframeOnPage(iframeOpen);
+                                   
+                               });
+                         // add opacity for the icon when scroll        
+                        jQuery(window).scroll(function (event) 
+                        {
+                            if (isMobile){
+                                jQuery('#renteres-icon').css('opacity','0.25');
+                            }else{
+                                jQuery('#renteres-icon').css('opacity','0.6');
+                            }
+                        });
+                        
+                        //for login-renteres-btn click
+                                 jQuery('#renteres-login-btn').on('click', function (e){
+                                        jQuery("#renteres-icon").trigger("mouseup", {action:'from-feed'});
+                                        jQuery("#renteres-icon").trigger("click", {action:'from-feed',type:'login-dialog'});
+
+                                        try{
+                                            var iframe = document.getElementById('renteres-embed-iframe').contentWindow;
+                                                  iframe.postMessage({ message: "login-dialog"}, "*"); 
+                                        }catch(err)
+                                        {
+
+                                        }
+                                 });
+                                 
+                                 //for login-renteres-btn click
+                                 jQuery('#renteres-login-btn').on('touchstart', function (e){
+                                        jQuery("#renteres-icon").trigger("mouseup", {action:'from-feed'});
+                                        jQuery("#renteres-icon").trigger("touchend",{action:'from-feed',type:'login-dialog'});
+
+                                      try{
+                                          var iframe = document.getElementById('renteres-embed-iframe').contentWindow;
+                                                iframe.postMessage({ message: "login-dialog"}, "*"); 
+                                      }catch(err)
+                                      {
+
+                                      }
+                                 });
+            }                       
+             
+            function loadScript(src, callback)
+            {
+                        var s,
+                            r,
+                            t;
+                            r = false;
+                            s = document.createElement('script');
+                            s.type = 'text/javascript';
+                            s.src = src;
+                            s.onload = s.onreadystatechange = function() {
+
+                            if ( !r && (!this.readyState || this.readyState == 'complete') )
+                            {
+                                r = true;
+                                callback();
+                            }
+                        };
+                        document.head.appendChild(s);
+            }
+             
+            function checkTouchIcon(lastPosition,currPosition)
+            {
+                var deviation = 20;
+  
+                    if (Math.abs(lastPosition.top  - currPosition.top)      < deviation  
+                        && Math.abs(lastPosition.left - currPosition.left)    < deviation) 
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+            }
+ 
+            function is_touch_device() 
+            {
+                return (('ontouchstart' in window)
+                        || (navigator.MaxTouchPoints > 0)
+                        || (navigator.msMaxTouchPoints > 0));
+            }
+             
+            function fixPositionIconAndIframeOnPage(iframeOpen)
+            {
+                if(!isMobileScreen()) //mobile frame
+                {
+                    if(iframeOpen)
+                    {
+                        fixPositionIframeOnPage();
+                    }
+                }
+            }
+             
+            function fixPositionIframeOnPage()
+            {
+                var rect = document.getElementById("renteres-icon").getBoundingClientRect();
+                    try {
+                            positionRootRenteres = document.getElementById('embed-script')
+                                         .getAttribute('position');
+                         } catch(err) {
+                            positionRootRenteres = ["top", "right"];
+                         };
+ 
+                            if(rect.top<window.innerHeight /2 && rect.left<window.innerWidth/2 ) //left-top
+                            {
+                                switch (positionRootRenteres){
+                                    case "top-left":jQuery("#renteres-iframe").animate({"left":"28px","top":"32px"}, 200); 
+                                          break;
+                                    case "top-right":jQuery("#renteres-iframe").animate({"left":"42px","top":"34px"}, 200); 
+                                          break;
+                                    case "bottom-right":jQuery("#renteres-iframe").animate({"left":"44px","top":"56px"}, 200);
+                                          break;
+                                    case "bottom-left":jQuery("#renteres-iframe").animate({"left":"26px","top":"55px"}, 200);
+                                          break;
+                                      default:jQuery("#renteres-iframe").animate({"left":"42px","top":"34px"}, 200); 
+                                }                         
+                            }
+                            else if(rect.top<window.innerHeight /2 && rect.left>=window.innerWidth/2) //right-top
+                            {
+                                switch (positionRootRenteres){
+                                     case "top-left":jQuery("#renteres-iframe").animate({"left":"-514px","top":"22px"}, 200);
+                                          break;
+                                     case "top-right":jQuery("#renteres-iframe").animate({"left":"-500px","top":"20px"}, 200);
+                                          break; 
+                                     case "bottom-right":jQuery("#renteres-iframe").animate({"left":"-500px","top":"40px"}, 200);
+                                          break;
+                                     case "bottom-left":jQuery("#renteres-iframe").animate({"left":"-514px","top":"45px"}, 200);
+                                          break;  
+                                      default: jQuery("#renteres-iframe").animate({"left":"-500px","top":"20px"}, 200);
+                                 }
+                            }
+                            else if(rect.top>=window.innerHeight /2 && rect.left<window.innerWidth/2) // left-bottom
+                            {
+                                switch (positionRootRenteres){
+                                      case "top-left":jQuery("#renteres-iframe").animate({"left":"20px","top":"-520px"}, 200);
+                                          break;
+                                      case "top-right":jQuery("#renteres-iframe").animate({"left":"40px","top":"-525px"}, 200);
+                                          break;
+                                      case "bottom-right":jQuery("#renteres-iframe").animate({"left":"40px","top":"-500px"}, 200);
+                                          break; 
+                                      case "bottom-left":jQuery("#renteres-iframe").animate({"left":"26px","top":"-500px"}, 200);
+                                          break;
+                                      default:jQuery("#renteres-iframe").animate({"left":"40px","top":"-525px"}, 200);
+                                  }
+                            }
+                            else if(rect.top>=window.innerHeight /2 && rect.left>window.innerWidth/2)//right-bottom
+                            {
+                                switch (positionRootRenteres){
+                                      case "top-left":jQuery("#renteres-iframe").animate({"left":"-514px","top":-jQuery("#renteres-embed-iframe").height()}, 200);
+                                          break;
+                                      case "top-right":jQuery("#renteres-iframe").animate({"left":"-500px","top":"-520px"}, 200);
+                                          break;
+                                      case "bottom-right":jQuery("#renteres-iframe").animate({"left":"-505px","top":"-495px"}, 200); 
+                                          break; 
+                                      case "bottom-left":jQuery("#renteres-iframe").animate({"left":"-514px","top":"-500px"}, 200);
+                                          break;  
+                                      default:jQuery("#renteres-iframe").animate({"left":"-500px","top":"-520px"}, 200);
+                                           
+                                  }
+                            }
+            }
+             
+            function locateIconMobileScreen()
+            {
+                if((/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) ) 
+                {
+                    jQuery("#renteres-root").css("left","auto");
+                    jQuery("#renteres-root").css("right","0px");
+                    jQuery("#renteres-root").css("top","1px");                                               
+                    jQuery("#renteres-root").css("position","fixed");
+                                                 
+                    var realHeight = jQuery(window).scrollTop();
+                        jQuery("#renteres-iframe").css("margin-left","15px");
+                        jQuery("#renteres-iframe").css("margin-right","15px");
+                        jQuery("#renteres-root").css({position:"absolute",top:realHeight,width:jQuery( window ).width(),height:jQuery( window ).height(),background:'rgba(255, 255, 255, 0.701961)'});
+                        jQuery("#renteres-embed-iframe").height( jQuery(window).height() - 60); 
+                        jQuery("#renteres-embed-iframe").css("max-width","100%");
+                        jQuery("#renteres-embed-iframe").css("max-height",jQuery(window).height() - 60);
+                    var iframe = document.getElementById('renteres-embed-iframe').contentWindow;
+                        iframe.postMessage({ message: "heightIframe", height: jQuery('#renteres-embed-iframe').height()},"*"); 
+                }else{
+                    jQuery("#renteres-embed-iframe").css("max-width","528px");
+                }
+            }
+             
+            function isMobileScreen()
+            {
+                var isMobile = false;
+                if((/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) ) {
+                    isMobile = true;
+                }              
+                return isMobile;
+            }
+                            
+            function isElementInViewport (el) 
+            {
+                //special bonus for those using jQuery
+                if (typeof jQuery === "function" && el instanceof jQuery) 
+                {
+                    el = el[0];
+                }
+ 
+                var rect = el.getBoundingClientRect();
+ 
+                    return (rect.top >= 0 &&
+                            rect.left >= 0 &&
+                            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /*or jQuery(window).height() */
+                            rect.right <= (window.innerWidth || document.documentElement.clientWidth) /*or jQuery(window).width() */
+                            );
+            }
+  
+            function initStartCss(positionOfRent, renteresRoot, renteresIframe, rootRenteresIcon) {
+                            if(window.renteresID  =='kj8Ojl9gAeve' || window.renteresID  =='11RgUCAa3KNj' ){
+                            jQuery(renteresRoot).css("bottom", '50%');
+                            jQuery(renteresRoot).css("left", '10px');
+                        }else if(window.renteresID  =='Dq3rGkKCX9it'){
+                                    jQuery(renteresRoot).css(positionOfRent[0], '100px');
+                                    jQuery(renteresRoot).css(positionOfRent[1], '5px');
+                        }
+                        else if(window.renteresID  =='T1rgrrjt1mCU' ||  window.renteresID  =='Rb7vddeE7xV9'){
+                                    jQuery(renteresRoot).css(positionOfRent[0], '55px');
+                                    jQuery(renteresRoot).css(positionOfRent[1], '5px');
+                        }
+                        else if(window.renteresID  =='IWaStrQSBzRb'){
+                                    jQuery(renteresRoot).css(positionOfRent[0], '50%');
+                                    jQuery(renteresRoot).css(positionOfRent[1], '5px');
+                        }
+                        else if(window.renteresID  =='AzG3UvHkmc70'){
+                                    jQuery(renteresRoot).css(positionOfRent[0], '45px');
+                                    jQuery(renteresRoot).css(positionOfRent[1], '5px');
+                        }
+                        else if(window.renteresID  =='U2cOrHvp3HwL'){
+                                    jQuery(renteresRoot).css(positionOfRent[0], '48px');
+                                    jQuery(renteresRoot).css(positionOfRent[1], '5px');
+                        }
+                        else if(window.renteresID  =='UMMHjZ5ADewg'){
+                                    jQuery(renteresRoot).css(positionOfRent[0], '150px');
+                                    jQuery(renteresRoot).css(positionOfRent[1], '5px');
+                        }
+                        else if(window.renteresID  =='nKRGEkFcm3g6'){
+                                    jQuery(renteresRoot).css(positionOfRent[0], '200px');
+                                    jQuery(renteresRoot).css(positionOfRent[1], '5px');
+                        }
+                        else if(window.renteresID  =='fTYnGGFzyXIs'){
+                                    jQuery(renteresRoot).css(positionOfRent[0], '60px');
+                                    jQuery(renteresRoot).css(positionOfRent[1], '5px');
+                        }
+                        else if(window.renteresID  =='EqmUgkAjAxde'){
+                                    jQuery(renteresRoot).css(positionOfRent[0], '60px');
+                                    jQuery(renteresRoot).css(positionOfRent[1], '5px');
+                        }
+                        else{
+                              jQuery(renteresRoot).css(positionOfRent[0], '7px');
+                              jQuery(renteresRoot).css(positionOfRent[1], '5px');
+                        }
+                            jQuery(renteresIframe).css("margin-" + positionOfRent[0], '25px');
+                            jQuery(rootRenteresIcon).css(positionOfRent[0], '1px');
+                            jQuery(rootRenteresIcon).css(positionOfRent[1], '5px');
+                            jQuery(renteresIframe).css("margin-" + positionOfRent[1], '25px');
+                            jQuery("#renteres-embed-iframe").css("max-width","528px");
+                            // Get the position att, if there isnt so the default is top-right
+                     try {
+                            positionOfRoot = document.getElementById('embed-script')
+                                         .getAttribute('position');
+                         } catch(err) {
+                            positionOfRoot = ["top", "right"];
+                         }
+                              
+                            switch(positionOfRoot){
+                                case "top-right"    : jQuery(renteresIframe).css ({left:'-500px'  , top:'20px'});
+                                      break;
+                                case "top-left"     : jQuery(renteresIframe).css ({top:'32px'   , left:'28px'});
+                                      break;
+                                case "bottom-right" : jQuery(renteresIframe).css ({left:'-505px'  , top:'-495px'});
+                                      break;
+                                case "bottom-left"  : jQuery(renteresIframe).css ({top:'-500px' , left:'26px'});
+                                      break;  
+                                  default: jQuery(renteresIframe).css ({left:'-500px'  , top:'20px'});     
+                              }          
+             }
+              
+             function initStartCssMobile(positionOfRent, renteresRoot, renteresIframe, rootRenteresIcon)
+             {
+                 jQuery(renteresIframe).css("margin-top","24px");
+                 jQuery("#renteres-embed-iframe").css("max-width","100%");
+                 jQuery(rootRenteresIcon).css('bottom', '1px');
+                 
+                   if(window.renteresID  =='11RgUCAa3KNj'){
+                     jQuery(renteresRoot).css('top', '110px');
+                      jQuery(rootRenteresIcon).css('right', '0px');
+                 }else if(window.renteresID  =='oEJ0dqkUPF'){
+                     jQuery(renteresRoot).css('top', '5px');
+                      jQuery(rootRenteresIcon).css('right', '0px');
+                 }else if((window.renteresID  =='44Ip6hdo9h4I') || (window.renteresID  =='X1vxCK5CHBYV')){
+                     jQuery(renteresRoot).css('top', 'auto');
+                     jQuery(renteresRoot).css('bottom', '10px');
+                     jQuery(rootRenteresIcon).css('right', '5px');
+                 }else if(window.renteresID  =='5uR6a10ZWNB3'){
+                     jQuery(renteresRoot).css('top', '182px');
+                     jQuery(rootRenteresIcon).css('right', '0px');
+                 }else if(window.renteresID  =='Rb7vddeE7xV9'){
+                     jQuery(renteresRoot).css('top', '140px');
+                     jQuery(rootRenteresIcon).css('right', '0px');
+                 }else if(window.renteresID  =='UMMHjZ5ADewg'){
+                     jQuery(renteresRoot).css('top', '15%');
+                     jQuery(rootRenteresIcon).css('right', '0px');
+                 }
+                 else{
+                     jQuery(renteresRoot).css('top', '90px');
+                      jQuery(rootRenteresIcon).css('right', '0px');
+                 }
+                 
+                 
+                 jQuery(renteresRoot).css('right', '0px');
+         
+                 jQuery(renteresIframe).css("margin-right" , '25px'); 
+                 jQuery("#renteres-root").css({width:"60px",height:"60px",background:'transparent'});
+             }
+              
+            function initLoadingIconCss(loadingIcon)
+            {
+                     try {
+                            positionOfRoot = document.getElementById('embed-script')
+                                         .getAttribute('position');
+                         }catch(err) {
+                            positionOfRoot = ["top", "right"];
+                         }
+                        if(!isMobileScreen())
+                        {
+                            switch(positionOfRoot){
+                                case "top-right": jQuery(loadingIcon).css ({top:'7px' , right:'5px'});
+                                      break;
+                                case "top-left" : jQuery(loadingIcon).css ({top:'1px' , left:'5px'});
+                                      break;
+                                case "bottom-right": jQuery(loadingIcon).css ({bottom:'1px' , right:'5px'});
+                                      break;
+                                case "bottom-left": jQuery(loadingIcon).css ({bottom:'1px' , left:'5px'});
+                                      break; 
+                                  default:  jQuery(loadingIcon).css ({top:'1px' , right:'5px'});
+                              }
+                        }
+                        else
+                        {
+                            jQuery(loadingIcon).css ({bottom:'1px' , right:'0px'});
+                        }
+            }
+            
+            function setToDefaultCss()
+            {
+                try {
+                        positionOfRent = document.getElementById('embed-script')
+                                         .getAttribute('position').split('-');;
+                    }catch(err){
+                        positionOfRent = ["top", "right"];
+                    }
+                    
+                jQuery("#renteres-root").css(positionOfRent[0], '7px');
+                jQuery("#renteres-root").css(positionOfRent[1], '5px');
+                jQuery("#renteres-iframe").css("margin-" + positionOfRent[0], '25px');
+                jQuery("#renteres-icon").css(positionOfRent[0], '1px');
+                jQuery("#renteres-icon").css(positionOfRent[1], '5px');
+                jQuery("#renteres-iframe").css("margin-" + positionOfRent[1], '25px');
+
+                try {
+                        positionOfRoot = document.getElementById('embed-script')
+                                         .getAttribute('position');
+                    }catch(err){
+                        positionOfRoot = ["top", "right"];
+                    }
+                    
+                    switch(positionOfRoot)
+                    {
+                        case "top-right"   : jQuery("#renteres-root").css ({left:'auto' , bottom:'auto'});
+                                      break;
+                        case "top-left"    : jQuery("#renteres-root").css ({right:'auto' , bottom:'auto'});
+                                      break;
+                        case "bottom-right": jQuery("#renteres-root").css ({left:'auto' , top:'auto'});
+                                      break;
+                        case "bottom-left" : jQuery("#renteres-root").css ({right:'auto' , top:'auto'});
+                                      break;  
+                        default:  jQuery("#renteres-root").css ({left:'auto' , bottom:'auto'});
+                    }                       
+            }
+               
+            function setToDefaultCssMobile()
+            {
+                try {
+                        positionOfRent = document.getElementById('embed-script')
+                                         .getAttribute('position').split('-');;
+                    }catch(err){
+                        positionOfRent = ["top", "right"];
+                    }
+                                  
+                jQuery("#renteres-iframe").css("margin-top","24px");
+                jQuery("#renteres-embed-iframe").css("max-width","100%");   
+                if(window.renteresID  =='11RgUCAa3KNj'){
+                     jQuery("#renteres-root").css('top', '110px');
+                     jQuery("#renteres-icon").css('right', '0px');
+                 }else  if(window.renteresID  =='oEJ0dqkUPF'){
+                     jQuery("#renteres-root").css('top', '5px');
+                     jQuery("#renteres-icon").css('right', '0px');
+                 }else if((window.renteresID  =='44Ip6hdo9h4I')|| (window.renteresID  =='X1vxCK5CHBYV')){
+                     jQuery("#renteres-root").css('top', 'auto');
+                     jQuery("#renteres-root").css('bottom', '10px');
+                     jQuery("#renteres-icon").css('right', '5px');
+                 }else if(window.renteresID  =='5uR6a10ZWNB3'){
+                     jQuery("#renteres-root").css('top', '182px');
+                     jQuery("#renteres-root").css('right', '0px');  
+                 }else if(window.renteresID  =='Rb7vddeE7xV9'){
+                     jQuery("#renteres-root").css('top', '140px');
+                     jQuery("#renteres-root").css('right', '0px');
+                 }else if(window.renteresID  =='UMMHjZ5ADewg'){
+                     jQuery("#renteres-root").css('top', '15%');
+                     jQuery("#renteres-root").css('right', '0px');
+                 }
+                 else{
+                     jQuery("#renteres-root").css('top', '90px');
+                     jQuery("#renteres-icon").css('right', '0px');
+                 }
+                jQuery("#renteres-icon").css('bottom', '1px');
+                jQuery("#renteres-root").css('right', '0px');
+                
+
+                jQuery("#renteres-iframe").css("margin-right", '25px');
+                jQuery("#renteres-root").css({width:"60px",height:"60px",background:'transparent'});
+                           
+           }
+               
+           function setRootRenteresForDragOnMobile(overflow_x,overflow_y)
+           {
+               //jQuery('body').css("overflow-x",overflow_x);
+              // jQuery('body').css("overflow-y",overflow_y);
+               setToDefaultCssMobile();
+           }
+           
+           function facebookShare(){
+                var app_id = '754032101409536';
+                var display = 'popup';
+                var caption = "RENTERES.COM";
+                var link =  window.location.href.split('#')[0];
+              //  var description = comment.comment;
+              //  var pictureToShare = comment.image;
+                var redirect_uri = 'http://app.renteres.ru/login/self.close.html'; 
+                var url ='https://www.facebook.com/dialog/feed?' + 'app_id=' + app_id + '&display=' + display + '&caption=' +caption + '&link=' +link + '&redirect_uri=' + redirect_uri ;
+
+                    popupCenter(url,"share",500,500);
+                    sharePage('1');
+            }
+            
+            function twitterShare(){
+
+                var link =  window.location.href.split('#')[0];
+                var url ='https://twitter.com/intent/tweet?via=RENTERES.COM&original_referer=' + link + '&url=' + link;
+                    popupCenter(url,"share",500,500);
+                    sharePage('2');
+            }
+
+            function vkShare(){
+                var link =  window.location.href.split('#')[0];
+                var url ='https://vk.com/share.php?noparse=true&url=' +link  + '&description=via RENTERES.COM'   ;
+                    popupCenter(url,"share",500,500);
+                    sharePage('3');
+            }
+
+            function okShare(){
+                var link =  window.location.href.split('#')[0];
+                var url = 'https://connect.ok.ru/dk?st.cmd=WidgetSharePreview&st.shareUrl=' +link   
+                     popupCenter(url,"share",500,500);
+                     sharePage('4');   
+            }
+
+            function mailRuShare(){
+                var link =  window.location.href.split('#')[0];
+                var url = 'http://connect.mail.ru/share?url=' + link  +'&description=RENTERES.COM';
+                        popupCenter(url,"share",500,500);
+                        sharePage('5');
+            }
+               
+            function popupCenter(url, title, w, h) {
+                // Fixes dual-screen position                         Most browsers      Firefox
+                var dualScreenLeft = window.screenLeft != undefined ? window.screenLeft : screen.left;
+                var dualScreenTop = window.screenTop != undefined ? window.screenTop : screen.top;
+
+                var width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
+                var height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
+
+                var left = ((width / 2) - (w / 2)) + dualScreenLeft;
+                var top = ((height / 2) - (h / 2)) + dualScreenTop;
+                var newWindow = window.open(url, title, 'scrollbars=no, width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
+
+                // Puts focus on the newWindow
+                if (window.focus) {
+                    newWindow.focus();
+                }
+            } 
+            
+            function sharePage(social)
+            {
+                jQuery.post("//app.renteres.ru/web/kit-1.2/sharePage.php", {
+                    url:  window.location.href.split('#')[0],
+                    social_id:social,
+                    renteresID: window.renteresID        
+               }).success(function (json) {
+
+                  var parsedJson = jQuery.parseJSON(json);
+                      
+    
+                })
+            }
+               
+              function getBadgeNumber(url,elem){
+                 jQuery.ajax({
+                        type: 'POST',
+                        url: '//app.renteres.ru/web/kit-1.2/getBadgeNumber.php',
+                        data: { 
+                                                   renteresID : window.renteresID,
+                                                   url            : url,
+                                                   identifier :window.identifier
+                                        },
+                        contentType: 'application/x-www-form-urlencoded',
+                        xhrFields: {
+                                withCredentials: true
+                       },
+                        headers: {},
+                        success: function(json ) {
+
+                        var parsedJson = jQuery.parseJSON(json);
+                        
+                        if (parsedJson.numberOfRows > 999)
+                        {
+                                     //update the bubble comment count
+                             jQuery(elem).text ('1k');
+                             //update the comment embed button
+                             jQuery("#renteres-comment-embed-count").text('1k');
+                             // update the 
+                        }
+                        else
+                        {
+                                   //update the bubble comment count
+                             jQuery(elem).text (parsedJson.numberOfRows);
+                             //update the comment embed button
+                             jQuery("#renteres-comment-embed-count").text(parsedJson.numberOfRows);
+                             // update the 
+                        }
+                         
+                             
+                          
+                        },
+                        error: function(err) {
+                                    console .log('badgeNumber error->' + err);
+                        }
+             });
+             
+             }      
+              
+              function isHasMessages() {
+                 jQuery.ajax( 
+                        {type: 'POST',
+                        timeout: 3000,
+                        url: '//app.renteres.ru/web/kit-1.2/getMessageNumber.php',
+                        contentType: 'application/x-www-form-urlencoded',
+                        async: true,
+                        xhrFields: {
+                                withCredentials: true
+                       },
+                        success: function(json) {
+                            var messageNumJSON = jQuery.parseJSON(json);
+                            if (messageNumJSON.messageNum > 0) {
+                                replaceBubble();
+                            }
+                        }
+                    });
+             }
+             
+             function updateAnayltics(domain_id,url,fp,support) {
+                 jQuery.ajax( 
+                        {type: 'POST',
+                        timeout: 1000,
+                        url: '//app.renteres.ru/web/kit-1.2/updateAnayltics.php',
+                        data: { 
+                                                   domain_id : domain_id,
+                                                   url            : url,
+                                                   fingerprint :fp,
+                                                   support:support
+                                        },
+                        contentType: 'application/x-www-form-urlencoded',
+                        async: true,
+                        xhrFields: {
+                                withCredentials: true
+                       },
+                        success: function(json) {
+                            
+                        }
+                    });
+             }
+             function replaceBubble() {
+                 jQuery(".renteres-icon-heart").addClass("renteres-icon-heart-notifction");
+                 jQuery(".renteres-icon-svg").addClass("renteres-icon-svg-notifction");
+             }
+             
+             function replaceBubbleBack() {
+                 jQuery("#renteres-icon").removeClass("renteres-icon-heart-notifction");
+                 jQuery(".renteres-icon-svg").removeClass("renteres-icon-svg-notifction");
+             }        
+})();
