@@ -968,7 +968,7 @@
             };
             window.ga = window.ga || function () { (ga.q = ga.q || []).push(arguments); };
             window.ga.l = +new Date(); // google analytics
-            loadScript('https://www.google-analytics.com/analytics.js', loadHandler);
+            //loadScript('https://www.google-analytics.com/analytics.js',loadHandler);
             //loadScript('https://www.google-analytics.com/analytics_debug.js',loadHandler);
         }
         else {
@@ -984,7 +984,7 @@
                 }
                 catch (e) { }
             };
-            loadScript('https://mc.yandex.ru/metrika/watch.js', loadHandler2);
+            //loadScript('https://mc.yandex.ru/metrika/watch.js', loadHandler2);
         }
         else {
             try {
