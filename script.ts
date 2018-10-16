@@ -82,7 +82,7 @@ declare type TFluidButtonState = 'hide' | 'animate' | 'show';
             //console.log('YA CB ♦ ',err,this);
         };
         try {
-            window['yaCounter' + Ya_id].reachGoal(category + ': ' + eAction, goalParams, goalCB );
+            //window['yaCounter' + Ya_id].reachGoal(category + ': ' + eAction, goalParams, goalCB );
         } catch (e) {
             console.log('Something is wrong with Yandex analytics: ', e);
         }
