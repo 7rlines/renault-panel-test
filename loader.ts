@@ -13,7 +13,7 @@
         return scriptDom;
     };
     if (!window.renaultButton) {
-        loadScript('../script.js?ver=0.28');
+        loadScript('../script.js?ver=0.29');
     }
     if (!window.RenaultShowroom || typeof (window.RenaultShowroom) == 'undefined') {
         window.RenaultShowroom = window.RenaultShowroom || []; // renault-showroom

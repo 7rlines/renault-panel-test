@@ -702,18 +702,15 @@
                         }
                     });
                 };
-                if (document.location.host.indexOf('hwdmedia') >= 0) {
-                    console.log('ok we are on hwdmedia -> modelFoundOnPage', modelFoundOnPage);
-                    if (modelFoundOnPage == 'koleos') {
-                        console.log('Koleos');
-                        RenaultShowroom.push("token", "e536ed9d2a721c7a76d569c523ce6de3e2f930c263580870438cb6bb813e4895.external-vitrine");
-                        loadScript('https://renault-showroom.slava.digital/vitrines/static/js/embed.js', ShowroomPush());
-                    }
-                    if (modelFoundOnPage == 'kaptur') {
-                        console.log('Kaptur');
-                        RenaultShowroom.push("token", "078f7c77634636f292d633e93e20934cd04c3ae901ba83f821b65e3dcd739f65.external-vitrine");
-                        loadScript('https://renault-showroom.slava.digital/vitrines/static/js/embed.js', ShowroomPush());
-                    }
+                if (modelFoundOnPage == 'koleos') {
+                    console.log('Koleos');
+                    RenaultShowroom.push("token", "e536ed9d2a721c7a76d569c523ce6de3e2f930c263580870438cb6bb813e4895.external-vitrine");
+                    loadScript('https://renault-showroom.slava.digital/vitrines/static/js/embed.js', ShowroomPush());
+                }
+                if (modelFoundOnPage == 'kaptur') {
+                    console.log('Kaptur');
+                    RenaultShowroom.push("token", "003487471d9735cf4d809915a4277cd7b8692bf6f4c257f08026476179308cd4.external-vitrine");
+                    loadScript('https://renault-showroom.slava.digital/vitrines/static/js/embed.js', ShowroomPush());
                 }
                 // Элемент "фоновая подложка"
                 function $background() {
@@ -915,7 +912,7 @@
                 }
             };
             Popup.prototype.disableScroll = function () {
-                if (window.addEventListener) {
+                if (window.addEventListener) { // older FF
                     window.addEventListener('DOMMouseScroll', this.preventDefault, false);
                 }
                 window.onwheel = this.preventDefault; // modern standard
