@@ -705,7 +705,7 @@
                 if (document.location.host.indexOf('7rlines') >= 0) {
                     var sourceArticleId = find_all(getArtilceSelector);
                     if (sourceArticleId) {
-                        var arcticleId = (sourceArticleId.innerText || sourceArticleId.textContent).toLowerCase();
+                        var arcticleId = (sourceArticleId[0].innerText || sourceArticleId[0].textContent).toLowerCase();
                         console.log(arcticleId, '****************************************************************************************');
                     }
                 }
